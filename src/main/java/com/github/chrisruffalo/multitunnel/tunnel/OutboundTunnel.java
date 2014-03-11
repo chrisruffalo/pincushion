@@ -61,6 +61,14 @@ public class OutboundTunnel extends ChannelInboundHandlerAdapter {
 		local.pipeline().addLast(returner);
 	}
 
+    @Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    	// close outbound
+    	this.channelFuture.channel().close().sync();
+    	this.logger.trace("closing outbound channel");
+	}
+
+	
 	@Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
 		this.logger.trace("forwarding to client");
