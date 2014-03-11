@@ -47,26 +47,16 @@ public class Main {
 		
 		// calculate threads
 		int workers = options.getWorkers();
-		int boss = (workers > 4) ? workers / 4 : 1;
-		if(boss > 2) {
-			boss = 2;
+		if(workers < 1) {
+			workers = 1;
 		}
-		int event = workers - boss;
-		
-		// create shared thread pools
-		EventLoopGroup bossGroup = new NioEventLoopGroup(boss);
-		EventLoopGroup eventGroup = bossGroup;
-		if(event > 1) {
-			eventGroup = new NioEventLoopGroup(event);
-			logger.info("Using {} workers [{} boss and {} event]", workers, boss, event);
-		} else {
-			logger.info("Using {} workers [{} shared boss and event]", workers, boss);
-		}
-				
+		EventLoopGroup eventGroup = new NioEventLoopGroup(workers);
+		logger.info("Using {} workers", workers);
+						
 		// start servers
 		logger.info("Starting ({}) tunnels...", instances.size());
 		for(TunnelInstance instance : instances) {
-			TunnelServer server = new TunnelServer(bossGroup, eventGroup, instance.getSourcePort(), instance.getDestHost(), instance.getDestPort());
+			TunnelServer server = new TunnelServer(new NioEventLoopGroup(), eventGroup, instance.getSourcePort(), instance.getDestHost(), instance.getDestPort());
 			server.start();
 		}
 		

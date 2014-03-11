@@ -22,7 +22,7 @@ public class OutboundTunnel extends ChannelInboundHandlerAdapter {
 	
 	private final String destinationHost;
 	
-	private final ChannelFuture channelFuture;
+	private ChannelFuture channelFuture;
 	
 	public OutboundTunnel(EventLoopGroup workerGroup, int sourcePort, String destinationHost, int destinationPort) {
 		// save values
@@ -37,6 +37,7 @@ public class OutboundTunnel extends ChannelInboundHandlerAdapter {
         b.group(workerGroup);
         b.channel(NioSocketChannel.class);
         b.option(ChannelOption.SO_KEEPALIVE, true);
+        b.option(ChannelOption.TCP_NODELAY, true);
         b.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
@@ -47,13 +48,21 @@ public class OutboundTunnel extends ChannelInboundHandlerAdapter {
         try {
 			this.channelFuture = b.connect(this.destinationHost, this.destinationPort).sync();
 		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
+			this.channelFuture = null;
+			this.logger.error("could not establish connection to remote");
 		}       
 	}
 	
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		super.channelActive(ctx);
+		
+		// if the channel was not created/connected close this 
+		// context,  hard
+		if(this.channelFuture == null) {
+			ctx.close().sync();
+			return;
+		}
 		
 		// add write back to pipeline
 		Channel local = this.channelFuture.channel();
@@ -63,6 +72,10 @@ public class OutboundTunnel extends ChannelInboundHandlerAdapter {
 
     @Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    	// can't do anything to a null channel
+    	if(this.channelFuture == null) {
+    		return;
+    	}
     	// close outbound
     	this.channelFuture.channel().close().sync();
     	this.logger.trace("closing outbound channel");
@@ -71,8 +84,13 @@ public class OutboundTunnel extends ChannelInboundHandlerAdapter {
 	
 	@Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		this.logger.trace("forwarding to client");
+		// can't forward to a null channel
+		if(this.channelFuture == null) {
+			return;
+		}
 		
+		this.logger.trace("forwarding to client");
+				
 		// forward input to client pipeline
 		Channel local = this.channelFuture.channel();
 		local.write(msg);
