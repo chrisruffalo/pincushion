@@ -20,11 +20,11 @@ public class Options {
 	@Parameter(names = {"--help", "-h"}, description="Prints help message.", help = true)
 	private boolean help;
 
-	@Parameter(names = {"--threads"}, description="Number of total threds to use")
-	private int threads;
+	@Parameter(names = {"--workers"}, description="Number of event workers to use.  Recommended at least 2 per tunnel, for each desired concurrent connection.")
+	private int workers;
 	
 	public Options() {
-		this.threads = Runtime.getRuntime().availableProcessors();
+		this.workers = Runtime.getRuntime().availableProcessors() * 2;
 	}
 	
 	public List<TunnelInstance>  getTunnels() {
@@ -43,12 +43,12 @@ public class Options {
 		this.help = help;
 	}
 
-	public int getThreads() {
-		return threads;
+	public int getWorkers() {
+		return workers;
 	}
 
-	public void setThreads(int threads) {
-		this.threads = threads;
+	public void setWorkers(int threads) {
+		this.workers = threads;
 	}
 	
 }
