@@ -1,6 +1,12 @@
 package com.github.chrisruffalo.multitunnel;
 
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.beust.jcommander.JCommander;
 import com.github.chrisruffalo.multitunnel.options.Options;
@@ -28,6 +34,8 @@ public class Main {
 			return;
 		}
 		
+		Logger logger = LoggerFactory.getLogger("main");
+		
 		// otherwise execute
 		List<TunnelInstance> instances = options.getTunnels();
 
@@ -37,9 +45,28 @@ public class Main {
 			return;
 		}
 		
+		// calculate threads
+		int threads = options.getThreads();
+		int boss = (threads > 4) ? threads / 4 : 1;
+		if(boss > 2) {
+			boss = 2;
+		}
+		int event = threads - boss;
+		
+		// create shared thread pools
+		EventLoopGroup bossGroup = new NioEventLoopGroup(boss);
+		EventLoopGroup eventGroup = bossGroup;
+		if(event > 1) {
+			eventGroup = new NioEventLoopGroup(event);
+			logger.info("Using {} threads [{} boss and {} event]", threads, boss, event);
+		} else {
+			logger.info("Using {} threads [{} shared boss and event]", threads, boss);
+		}
+				
 		// start servers
+		logger.info("Starting instances...");
 		for(TunnelInstance instance : instances) {
-			TunnelServer server = new TunnelServer(instance.getSourcePort(), instance.getDestHost(), instance.getDestPort());
+			TunnelServer server = new TunnelServer(bossGroup, eventGroup, instance.getSourcePort(), instance.getDestHost(), instance.getDestPort());
 			server.start();
 		}
 		

@@ -20,6 +20,13 @@ public class Options {
 	@Parameter(names = {"--help", "-h"}, description="Prints help message.", help = true)
 	private boolean help;
 
+	@Parameter(names = {"--threads"}, description="Number of total threds to use")
+	private int threads;
+	
+	public Options() {
+		this.threads = Runtime.getRuntime().availableProcessors();
+	}
+	
 	public List<TunnelInstance>  getTunnels() {
 		return tunnels;
 	}
@@ -34,6 +41,14 @@ public class Options {
 
 	public void setHelp(boolean help) {
 		this.help = help;
+	}
+
+	public int getThreads() {
+		return threads;
+	}
+
+	public void setThreads(int threads) {
+		this.threads = threads;
 	}
 	
 }
