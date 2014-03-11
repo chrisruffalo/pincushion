@@ -41,6 +41,13 @@
 		    <artifactId>netty-all</artifactId>
 		    <version>4.0.17.Final</version>
 		</dependency>
+		
+		<!-- command/configuration -->
+		<dependency>
+		  <groupId>com.beust</groupId>
+		  <artifactId>jcommander</artifactId>
+		  <version>1.30</version>
+		</dependency>
 
 		<!-- testing/junit -->
 		<dependency>
@@ -53,6 +60,7 @@
 
 	<build>
 		<plugins>
+			<!-- execute test coverage -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -72,10 +80,33 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<!-- create single executable jar -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.2</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>com.github.chrisruffalo.multitunnel.Main</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>				
 		</plugins>	
 	
 		<pluginManagement>
 			<plugins>
+				<!-- control compiler version -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
@@ -84,7 +115,7 @@
 						<target>${multitunnel.java.version}</target>
 						<fork>true</fork>
 					</configuration>
-				</plugin>
+				</plugin>							
 				
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
 				<plugin>

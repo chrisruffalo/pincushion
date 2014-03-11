@@ -39,7 +39,7 @@ public class TunnelServer {
 		this.destinationHost = destinationHost;
 		this.destinationPort = destinationPort;
 		
-		this.logger = LoggerFactory.getLogger("tunnel server " + this.port);
+		this.logger = LoggerFactory.getLogger("tunnel [" + port + "] => [" + destinationHost + ":" + destinationPort + "]");
 	}
 	
 	public void start() {

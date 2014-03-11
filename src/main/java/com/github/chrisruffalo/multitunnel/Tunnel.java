@@ -24,13 +24,13 @@ public class Tunnel extends ChannelInboundHandlerAdapter {
 	
 	private final ChannelFuture channelFuture;
 	
-	public Tunnel(EventLoopGroup workerGroup, int sourcePort, String destinaitonHost, int destinationPort) {
+	public Tunnel(EventLoopGroup workerGroup, int sourcePort, String destinationHost, int destinationPort) {
 		// save values
 		this.destinationPort = destinationPort;
-		this.destinationHost = destinaitonHost;
+		this.destinationHost = destinationHost;
 		
 		// create descriptive logger
-		this.logger = LoggerFactory.getLogger("tunnel [" + sourcePort + "] => [" + destinaitonHost + ":" + destinationPort + "]");
+		this.logger = LoggerFactory.getLogger("outbound [" + sourcePort + "] => [" + destinationHost + ":" + destinationPort + "]");
 		
 		// connect
 		Bootstrap b = new Bootstrap();
