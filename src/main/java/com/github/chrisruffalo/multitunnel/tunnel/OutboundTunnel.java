@@ -33,16 +33,16 @@ public class OutboundTunnel extends ChannelInboundHandlerAdapter {
 		this.logger = LoggerFactory.getLogger("outbound [" + sourcePort + "] => [" + destinationHost + ":" + destinationPort + "]");
 		
 		// connect
-		Bootstrap b = new Bootstrap();
-        b.group(workerGroup);
-        b.channel(NioSocketChannel.class);
-        b.option(ChannelOption.SO_KEEPALIVE, true);
-        b.option(ChannelOption.TCP_NODELAY, true);
-        b.handler(new ChannelInitializer<SocketChannel>() {
-            @Override
-            public void initChannel(SocketChannel ch) throws Exception {
-            }
-        });
+		Bootstrap b = new Bootstrap()
+        	.group(workerGroup)
+        	.channel(NioSocketChannel.class)
+	        .option(ChannelOption.SO_KEEPALIVE, true)
+	        .option(ChannelOption.TCP_NODELAY, true)
+	        .handler(new ChannelInitializer<SocketChannel>() {
+	            @Override
+	            public void initChannel(SocketChannel ch) throws Exception {
+	            }
+	        });
 
         // start the client and keep the channel for writing to
         try {
