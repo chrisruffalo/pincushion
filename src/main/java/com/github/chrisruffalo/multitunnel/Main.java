@@ -5,6 +5,7 @@ import java.util.List;
 import com.beust.jcommander.JCommander;
 import com.github.chrisruffalo.multitunnel.options.Options;
 import com.github.chrisruffalo.multitunnel.options.tunnel.TunnelInstance;
+import com.github.chrisruffalo.multitunnel.util.MultiTunnelProperties;
 
 public class Main {
 
@@ -14,25 +15,29 @@ public class Main {
 		Options options = new Options();
 		JCommander commander = new JCommander(options);
 		commander.setAllowAbbreviatedOptions(true);
+		commander.setProgramName("multi-tunnel v" + MultiTunnelProperties.INSTANCE.version());
 	
 		// parse
 		commander.parse(args);
 		
 		// do help stuff
 		if(options.isHelp()) {
-			// print and return
+			// print usage
+			commander.usage();
+			// done
 			return;
 		}
 		
 		// otherwise execute
 		List<TunnelInstance> instances = options.getTunnels();
-		
+
+		// requires at least one tunnel
 		if(instances == null || instances.isEmpty()) {
-			// requires at least one tunnel
 			System.out.println("At least one tunnel must be specified");
 			return;
 		}
 		
+		// start servers
 		for(TunnelInstance instance : instances) {
 			TunnelServer server = new TunnelServer(instance.getSourcePort(), instance.getDestHost(), instance.getDestPort());
 			server.start();

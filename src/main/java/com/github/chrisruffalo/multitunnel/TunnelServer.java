@@ -12,6 +12,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.chrisruffalo.multitunnel.tunnel.OutboundTunnel;
+
 public class TunnelServer {
 
 	private final EventLoopGroup bossGroup;
@@ -49,7 +51,7 @@ public class TunnelServer {
          .childHandler(new ChannelInitializer<SocketChannel>() { 
 			@Override
             public void initChannel(SocketChannel ch) throws Exception {
-                ch.pipeline().addLast(new Tunnel(workerGroup, port, destinationHost, destinationPort));
+                ch.pipeline().addLast(new OutboundTunnel(workerGroup, port, destinationHost, destinationPort));
             }
          })
          .option(ChannelOption.SO_BACKLOG, 128)          

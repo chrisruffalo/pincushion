@@ -1,4 +1,4 @@
-package com.github.chrisruffalo.multitunnel;
+package com.github.chrisruffalo.multitunnel.tunnel;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -14,7 +14,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Tunnel extends ChannelInboundHandlerAdapter {
+public class OutboundTunnel extends ChannelInboundHandlerAdapter {
 	
 	private final Logger logger;
 	
@@ -24,7 +24,7 @@ public class Tunnel extends ChannelInboundHandlerAdapter {
 	
 	private final ChannelFuture channelFuture;
 	
-	public Tunnel(EventLoopGroup workerGroup, int sourcePort, String destinationHost, int destinationPort) {
+	public OutboundTunnel(EventLoopGroup workerGroup, int sourcePort, String destinationHost, int destinationPort) {
 		// save values
 		this.destinationPort = destinationPort;
 		this.destinationHost = destinationHost;
@@ -57,7 +57,7 @@ public class Tunnel extends ChannelInboundHandlerAdapter {
 		
 		// add write back to pipeline
 		Channel local = this.channelFuture.channel();
-		TunnelReturn returner = new TunnelReturn(ctx);
+		ReturnTunnel returner = new ReturnTunnel(ctx);
 		local.pipeline().addLast(returner);
 	}
 
