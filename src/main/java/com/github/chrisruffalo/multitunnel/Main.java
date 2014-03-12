@@ -3,6 +3,7 @@ package com.github.chrisruffalo.multitunnel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -11,10 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.beust.jcommander.JCommander;
+import com.github.chrisruffalo.multitunnel.model.TunnelInstance;
 import com.github.chrisruffalo.multitunnel.options.Options;
-import com.github.chrisruffalo.multitunnel.options.tunnel.TunnelInstance;
 import com.github.chrisruffalo.multitunnel.tunnel.TunnelServer;
 import com.github.chrisruffalo.multitunnel.util.MultiTunnelProperties;
+import com.github.chrisruffalo.multitunnel.web.ManagementServer;
 
 public class Main {
 
@@ -42,12 +44,6 @@ public class Main {
 		// otherwise execute
 		List<TunnelInstance> instances = options.getTunnels();
 
-		// requires at least one tunnel
-		if(instances == null || instances.isEmpty()) {
-			System.out.println("At least one tunnel must be specified");
-			return;
-		}
-		
 		// create executor group
 		Executor pool = Executors.newCachedThreadPool();
 				
@@ -58,11 +54,22 @@ public class Main {
 		}
 		EventLoopGroup eventGroup = new NioEventLoopGroup(workers, pool);
 		logger.info("Using {} workers", workers);
-						
-		// start servers
-		logger.info("Starting ({}) tunnels...", instances.size());
-		for(TunnelInstance instance : instances) {
-			TunnelServer server = new TunnelServer(new NioEventLoopGroup(1, pool), eventGroup, instance.getSourcePort(), instance.getDestHost(), instance.getDestPort());
+		
+		// only start if some instances exist
+		if(instances != null && !instances.isEmpty()) {
+			// start servers
+			logger.info("Starting ({}) pre-configured tunnels...", instances.size());
+			for(TunnelInstance instance : instances) {
+				TunnelServer server = new TunnelServer(new NioEventLoopGroup(1, pool), eventGroup, instance.getSourcePort(), instance.getDestHost(), instance.getDestPort());
+				server.start();
+			}
+		} else {
+			instances = new LinkedList<>();
+		}
+		
+		// start management interface, if needed
+		if(options.isManagement()) {
+			ManagementServer server = new ManagementServer(instances, pool, eventGroup, options);
 			server.start();
 		}
 		

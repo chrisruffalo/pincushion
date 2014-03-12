@@ -17,11 +17,16 @@ public enum MultiTunnelProperties {
 		} catch (IOException e) {
 			// set some defaults...
 			this.props.put("version", "UNKNOWN");
+			this.props.put("title", "UNKNOWN");
 		}
 	}
 	
 	public String version() {
 		return this.props.getProperty("version");
+	}
+	
+	public String title() {
+		return this.props.getProperty("title");
 	}
 	
 }

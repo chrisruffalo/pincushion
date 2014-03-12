@@ -18,9 +18,13 @@
 		<logback.version>1.0.13</logback.version>
 		<guava.version>15.0-rc1</guava.version>
 		<junit.version>4.11</junit.version>
+		<resteasy.version>3.0.6.Final</resteasy.version>
 		
-		<!-- 5.0.0.Alpha1 or 4.0.17.Final, still deciding -->
+		<!-- using alpha for better channel adapters and for executors -->
 		<netty.version>5.0.0.Alpha1</netty.version>
+		
+		<!-- jetty -->
+		<jetty.version>9.1.3.v20140225</jetty.version>
 	</properties>
 	
 	<dependencies>
@@ -38,11 +42,59 @@
 		    <version>${logback.version}</version>
 		</dependency>
 		
-		<!-- tcp/ip -->
+		<!-- direct nio tcp -->
 		<dependency>
 		    <groupId>io.netty</groupId>
 		    <artifactId>netty-all</artifactId>
 		    <version>${netty.version}</version>
+		</dependency>
+		
+		<!-- jetty for management server -->
+		<dependency>
+		    <groupId>org.eclipse.jetty</groupId>
+		    <artifactId>jetty-server</artifactId>
+		    <version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.eclipse.jetty</groupId>
+		    <artifactId>jetty-servlets</artifactId>
+		    <version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.eclipse.jetty</groupId>
+		    <artifactId>jetty-webapp</artifactId>
+		    <version>${jetty.version}</version>
+		</dependency>
+				
+		<!-- resteasy services on jetty -->
+		<dependency>
+		    <groupId>org.jboss.resteasy</groupId>
+		    <artifactId>resteasy-jaxb-provider</artifactId>
+		    <version>${resteasy.version}</version>
+		    <exclusions>
+		    	<exclusion>
+		    		<artifactId>istack-commons-runtime</artifactId>
+		    		<groupId>com.sun.istack</groupId>
+		    	</exclusion>
+		    </exclusions>
+		</dependency>
+		<dependency>
+		    <groupId>org.jboss.resteasy</groupId>
+		    <artifactId>resteasy-jaxrs</artifactId>
+		    <version>${resteasy.version}</version>
+		    <exclusions>
+		    	<exclusion>
+		    		<artifactId>javassist</artifactId>
+		    		<groupId>javassist</groupId>
+		    	</exclusion>
+		    </exclusions>
+		</dependency>		
+		
+		<!-- make up for scanning lack in jetty/resteasy -->
+		<dependency>
+		    <groupId>org.reflections</groupId>
+		    <artifactId>reflections</artifactId>
+		    <version>0.9.9-RC1</version>
 		</dependency>
 		
 		<!-- command/configuration -->
@@ -114,9 +166,12 @@
 						</goals>
 						<configuration>
 							<transformers>
+								<!-- set main class -->
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>com.github.chrisruffalo.multitunnel.Main</mainClass>
 								</transformer>
+								<!-- merge service files -->
+    							<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
 							</transformers>
 						</configuration>
 					</execution>

@@ -1,4 +1,4 @@
-package com.github.chrisruffalo.multitunnel.options.tunnel;
+package com.github.chrisruffalo.multitunnel.model;
 
 public class TunnelInstance {
 
