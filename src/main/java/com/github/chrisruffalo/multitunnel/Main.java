@@ -4,6 +4,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.beust.jcommander.JCommander;
 import com.github.chrisruffalo.multitunnel.options.Options;
 import com.github.chrisruffalo.multitunnel.options.tunnel.TunnelInstance;
+import com.github.chrisruffalo.multitunnel.tunnel.TunnelServer;
 import com.github.chrisruffalo.multitunnel.util.MultiTunnelProperties;
 
 public class Main {
@@ -45,18 +48,21 @@ public class Main {
 			return;
 		}
 		
+		// create executor group
+		Executor pool = Executors.newCachedThreadPool();
+				
 		// calculate threads
 		int workers = options.getWorkers();
 		if(workers < 1) {
 			workers = 1;
 		}
-		EventLoopGroup eventGroup = new NioEventLoopGroup(workers);
+		EventLoopGroup eventGroup = new NioEventLoopGroup(workers, pool);
 		logger.info("Using {} workers", workers);
 						
 		// start servers
 		logger.info("Starting ({}) tunnels...", instances.size());
 		for(TunnelInstance instance : instances) {
-			TunnelServer server = new TunnelServer(new NioEventLoopGroup(), eventGroup, instance.getSourcePort(), instance.getDestHost(), instance.getDestPort());
+			TunnelServer server = new TunnelServer(new NioEventLoopGroup(1, pool), eventGroup, instance.getSourcePort(), instance.getDestHost(), instance.getDestPort());
 			server.start();
 		}
 		

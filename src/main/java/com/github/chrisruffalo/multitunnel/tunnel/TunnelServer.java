@@ -1,4 +1,4 @@
-package com.github.chrisruffalo.multitunnel;
+package com.github.chrisruffalo.multitunnel.tunnel;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -11,8 +11,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.github.chrisruffalo.multitunnel.tunnel.OutboundTunnel;
 
 public class TunnelServer {
 
@@ -46,7 +44,7 @@ public class TunnelServer {
 	
 	public void start() {
         ServerBootstrap b = new ServerBootstrap();
-        b.group(bossGroup, workerGroup)
+        b.group(this.bossGroup, this.workerGroup)
          .channel(NioServerSocketChannel.class)
          .childHandler(new ChannelInitializer<SocketChannel>() { 
 			@Override
@@ -55,8 +53,9 @@ public class TunnelServer {
             }
          })
          .option(ChannelOption.SO_BACKLOG, 256) 
-         .option(ChannelOption.TCP_NODELAY, true)
-         .childOption(ChannelOption.SO_KEEPALIVE, true);       
+         .option(ChannelOption.SO_KEEPALIVE, true)
+         .option(ChannelOption.SO_REUSEADDR, true)
+         .option(ChannelOption.TCP_NODELAY, true);
 
 		try {
 			this.channelFuture = b.bind(this.port).sync();

@@ -24,7 +24,7 @@ public class Options {
 	private int workers;
 	
 	public Options() {
-		this.workers = Runtime.getRuntime().availableProcessors();
+		this.workers = Runtime.getRuntime().availableProcessors() * 2;
 	}
 	
 	public List<TunnelInstance>  getTunnels() {

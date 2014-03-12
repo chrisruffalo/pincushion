@@ -18,7 +18,9 @@
 		<logback.version>1.0.13</logback.version>
 		<guava.version>15.0-rc1</guava.version>
 		<junit.version>4.11</junit.version>
-		<netty.version>4.0.17.Final</netty.version>
+		
+		<!-- 5.0.0.Alpha1 or 4.0.17.Final, still deciding -->
+		<netty.version>5.0.0.Alpha1</netty.version>
 	</properties>
 	
 	<dependencies>
