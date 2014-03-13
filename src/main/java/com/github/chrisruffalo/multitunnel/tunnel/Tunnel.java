@@ -12,7 +12,9 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TunnelServer {
+import com.github.chrisruffalo.multitunnel.client.ClientFactory;
+
+public class Tunnel {
 
 	private final EventLoopGroup bossGroup;
 	
@@ -28,11 +30,11 @@ public class TunnelServer {
 	
 	private final Logger logger;
 	
-	public TunnelServer(int port, String destinationHost, int destinationPort) {
+	public Tunnel(int port, String destinationHost, int destinationPort) {
 		this(new NioEventLoopGroup(), new NioEventLoopGroup(), port, destinationHost, destinationPort);
 	}
 	
-	public TunnelServer(EventLoopGroup bossGroup, EventLoopGroup workerGroup, int port, String destinationHost, int destinationPort) {
+	public Tunnel(EventLoopGroup bossGroup, EventLoopGroup workerGroup, int port, String destinationHost, int destinationPort) {
 		this.bossGroup = bossGroup;
 		this.workerGroup = workerGroup;
 		this.port = port;
@@ -43,13 +45,21 @@ public class TunnelServer {
 	}
 	
 	public void start() {
+		// create new client factory
+		final ClientFactory factory = new ClientFactory(this.workerGroup);
+		
+		// create server bootstrap
         ServerBootstrap b = new ServerBootstrap();
         b.group(this.bossGroup, this.workerGroup)
          .channel(NioServerSocketChannel.class)
          .childHandler(new ChannelInitializer<SocketChannel>() { 
 			@Override
             public void initChannel(SocketChannel ch) throws Exception {
-                ch.pipeline().addLast(new OutboundTunnel(workerGroup, port, destinationHost, destinationPort));
+				// create forwarding client connection
+				ChannelFuture target = factory.client(destinationHost, destinationPort, ch.newPromise());
+								
+				// add a forwarder from this server connection to the client
+                ch.pipeline().addLast("outbound-channel", new RequestForwarder(target));
             }
          })
          .option(ChannelOption.SO_BACKLOG, 256) 

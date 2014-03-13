@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.beust.jcommander.JCommander;
 import com.github.chrisruffalo.multitunnel.model.TunnelInstance;
 import com.github.chrisruffalo.multitunnel.options.Options;
-import com.github.chrisruffalo.multitunnel.tunnel.TunnelServer;
+import com.github.chrisruffalo.multitunnel.tunnel.Tunnel;
 import com.github.chrisruffalo.multitunnel.util.MultiTunnelProperties;
 import com.github.chrisruffalo.multitunnel.web.ManagementServer;
 
@@ -60,7 +60,7 @@ public class Main {
 			// start servers
 			logger.info("Starting ({}) pre-configured tunnels...", instances.size());
 			for(TunnelInstance instance : instances) {
-				TunnelServer server = new TunnelServer(new NioEventLoopGroup(1, pool), eventGroup, instance.getSourcePort(), instance.getDestHost(), instance.getDestPort());
+				Tunnel server = new Tunnel(new NioEventLoopGroup(1, pool), eventGroup, instance.getSourcePort(), instance.getDestHost(), instance.getDestPort());
 				server.start();
 			}
 		} else {
