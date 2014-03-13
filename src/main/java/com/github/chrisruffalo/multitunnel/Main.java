@@ -2,6 +2,8 @@ package com.github.chrisruffalo.multitunnel;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.ResourceLeakDetector;
+import io.netty.util.ResourceLeakDetector.Level;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +39,10 @@ public class Main {
 			return;
 		}
 		
+		// set netty stuff and various environment things
+		ResourceLeakDetector.setLevel(Level.DISABLED);		
+		
+		// start logging
 		Logger logger = LoggerFactory.getLogger("main");
 		
 		// otherwise execute

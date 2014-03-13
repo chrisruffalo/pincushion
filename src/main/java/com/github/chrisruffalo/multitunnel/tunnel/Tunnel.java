@@ -1,5 +1,6 @@
 package com.github.chrisruffalo.multitunnel.tunnel;
 
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -42,7 +43,7 @@ public class Tunnel {
 	
 	public void start() {
 		// create new client factory
-		final ClientFactory factory = new ClientFactory();
+		final ClientFactory factory = new ClientFactory(this.workerGroup);
 		
 		// create server bootstrap
         ServerBootstrap b = new ServerBootstrap();
@@ -51,17 +52,22 @@ public class Tunnel {
          .childHandler(new ChannelInitializer<SocketChannel>() { 
 			@Override
             public void initChannel(SocketChannel ch) throws Exception {
-				// create forwarding client connection
-				ChannelFuture target = factory.client(destinationHost, destinationPort, ch.newPromise());
-								
+				// create forwarding client bootstrapper 
+				Bootstrap bootstrap = factory.bootstrap(destinationHost, destinationPort);
+					
+				// log
+				//ch.pipeline().addLast(new LoggingHandler("forward-log", LogLevel.INFO));
+				
 				// add a forwarder from this server connection to the client
-                ch.pipeline().addLast("outbound-channel", new RequestForwarder(target));
+                ch.pipeline().addLast("request-forwarder", new RequestForwarder(bootstrap));
             }
          })
          .option(ChannelOption.SO_BACKLOG, 256) 
          .option(ChannelOption.SO_KEEPALIVE, true)
          .option(ChannelOption.SO_REUSEADDR, true)
-         .option(ChannelOption.TCP_NODELAY, true);
+         .childOption(ChannelOption.TCP_NODELAY, true)
+         .childOption(ChannelOption.AUTO_READ, false)
+         ;
 
 		try {
 			this.channelFuture = b.bind(this.port).sync();

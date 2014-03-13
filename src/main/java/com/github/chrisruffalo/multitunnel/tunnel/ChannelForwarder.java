@@ -1,100 +1,66 @@
 package com.github.chrisruffalo.multitunnel.tunnel;
 
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
-import io.netty.util.ReferenceCountUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class ChannelForwarder extends ChannelHandlerAdapter {
 
-	private final ChannelFuture channelFuture;
+	protected abstract Channel target();
 	
-	private final Logger logger;
-	
-	public ChannelForwarder(final ChannelFuture channelFuture) {
-		this.channelFuture = channelFuture;
-		this.logger = LoggerFactory.getLogger("channel forwarder");
-	}
-	
-	protected Channel target() {
-		return this.channelFuture.channel();
+	@Override
+	public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
+		final Channel channel = this.target();
+		
+		// do write on active target channel
+        if (channel != null && channel.isActive()) {
+        	channel.writeAndFlush(msg).addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if (future.isSuccess()) {
+                        // was able to flush out data, signal it to read
+                        ctx.channel().read();
+                    } else {
+                        future.channel().close();
+                    }
+                }
+            });
+        }
 	}
 	
 	@Override
-	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		Channel channel = this.target();
-		if(channel == null || !channel.isWritable()) {
-			this.logger.error("target connection is not available during activation, closing");
-			ctx.close();
-		} else {
-			this.logger.trace("route {} -> {} established", ctx.channel().id(), channel.id());
-		}
-	
-		// forward event
-		super.channelActive(ctx);
-	}
-
-	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		Channel channel = this.target();
-		if(channel == null || !channel.isWritable()) {
-			this.logger.trace("target channel is not available for writing, closing");
-			ctx.close();
-		}		
-		
-		// retain the message 
-		msg = ReferenceCountUtil.retain(msg);
-
-		// forward the msg
-		channel.writeAndFlush(msg);
-		
-		// forward event
-		super.channelRead(ctx, msg);
-	}
-
-	@Override
-	public void disconnect(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
-		// disconnect forwarding channel
-		Channel channel = this.target();
-		if(channel != null && channel.isOpen()) {
-			this.logger.trace("disconnecting target channel");
-			ctx.disconnect();
-		}
-		
-		// forward event
-		super.disconnect(ctx, promise);
-	}
-
-	@Override
-	public void close(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
-		// close forwarding channel
-		Channel channel = this.target();
-		if(channel != null && channel.isOpen()) {
-			this.logger.trace("closing target channel");
-			ctx.close();
-		}
-		
-		super.close(ctx, promise);
+        if (channel != null) {
+        	ChannelForwarder.closeOnFlush(channel);
+        }
 	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)	throws Exception {
-		// got an error
-		this.logger.error("error: {}", cause.getMessage(), cause);
-		
 		// close target
 		Channel channel = this.target();
 		if(channel != null && channel.isOpen()) {
-			this.logger.info("closing target channel");
-			ctx.close();
+			channel.close();
 		}
-				
-		super.exceptionCaught(ctx, cause);
+		// close local
+		ChannelForwarder.closeOnFlush(ctx.channel());		
 	}	
+	
+    /**
+     * Utility method for closing a channel and flushing it by sending an empty buffer out.
+     * 
+     * @param ch
+     */
+    static void closeOnFlush(Channel ch) {
+        if (ch.isActive()) {
+            ch.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+        } else {
+        	ch.close();
+        }
+    }
 		
 }
