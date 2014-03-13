@@ -60,7 +60,7 @@ public class Main {
 			// start servers
 			logger.info("Starting ({}) pre-configured tunnels...", instances.size());
 			for(TunnelInstance instance : instances) {
-				Tunnel server = new Tunnel(new NioEventLoopGroup(1, pool), eventGroup, instance.getSourcePort(), instance.getDestHost(), instance.getDestPort());
+				Tunnel server = new Tunnel(new NioEventLoopGroup(1, pool), eventGroup, instance);
 				server.start();
 			}
 		} else {

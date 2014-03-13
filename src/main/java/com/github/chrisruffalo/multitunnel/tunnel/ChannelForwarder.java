@@ -47,8 +47,9 @@ public abstract class ChannelForwarder extends ChannelHandlerAdapter {
 			ctx.close();
 		}		
 		
-		// retain the reference so it can be forwarded
-		ReferenceCountUtil.retain(msg);
+		// retain the message 
+		msg = ReferenceCountUtil.retain(msg);
+
 		// forward the msg
 		channel.writeAndFlush(msg);
 		

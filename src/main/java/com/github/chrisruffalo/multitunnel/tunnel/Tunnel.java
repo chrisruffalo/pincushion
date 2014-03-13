@@ -5,7 +5,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
@@ -13,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.chrisruffalo.multitunnel.client.ClientFactory;
+import com.github.chrisruffalo.multitunnel.model.TunnelInstance;
 
 public class Tunnel {
 
@@ -30,16 +30,12 @@ public class Tunnel {
 	
 	private final Logger logger;
 	
-	public Tunnel(int port, String destinationHost, int destinationPort) {
-		this(new NioEventLoopGroup(), new NioEventLoopGroup(), port, destinationHost, destinationPort);
-	}
-	
-	public Tunnel(EventLoopGroup bossGroup, EventLoopGroup workerGroup, int port, String destinationHost, int destinationPort) {
+	public Tunnel(EventLoopGroup bossGroup, EventLoopGroup workerGroup, TunnelInstance instance) {
 		this.bossGroup = bossGroup;
 		this.workerGroup = workerGroup;
-		this.port = port;
-		this.destinationHost = destinationHost;
-		this.destinationPort = destinationPort;
+		this.port = instance.getSourcePort();
+		this.destinationHost = instance.getDestHost();
+		this.destinationPort = instance.getDestPort();
 		
 		this.logger = LoggerFactory.getLogger("tunnel [" + port + "] => [" + destinationHost + ":" + destinationPort + "]");
 	}
