@@ -5,7 +5,6 @@ import io.netty.channel.EventLoopGroup;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -32,7 +31,7 @@ public class ManagementServer {
 	
 	private Logger logger;
 	
-	public ManagementServer(List<TunnelInstance> instances, Executor pool, EventLoopGroup eventGroup, Options options) {
+	public ManagementServer(List<TunnelInstance> instances, EventLoopGroup eventGroup, Options options) {
 		this.managementInterface = options.getManagementInterface();
 		this.managementPort = options.getManagementPort();
 		

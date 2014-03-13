@@ -4,7 +4,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
@@ -14,11 +14,11 @@ public class ClientFactory {
 
 	private final Bootstrap bootstrap;
 	
-	public ClientFactory(final EventLoopGroup workerGroup) {
+	public ClientFactory() {
 		// create remote connection details
 		this.bootstrap = new Bootstrap()
-        	.group(workerGroup)
         	.channel(NioSocketChannel.class)
+        	.group(new NioEventLoopGroup(1))
 	        .option(ChannelOption.TCP_NODELAY, true)
 	        .option(ChannelOption.SO_KEEPALIVE, true);
 	}

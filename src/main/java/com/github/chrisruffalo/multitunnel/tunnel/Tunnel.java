@@ -42,7 +42,7 @@ public class Tunnel {
 	
 	public void start() {
 		// create new client factory
-		final ClientFactory factory = new ClientFactory(this.workerGroup);
+		final ClientFactory factory = new ClientFactory();
 		
 		// create server bootstrap
         ServerBootstrap b = new ServerBootstrap();

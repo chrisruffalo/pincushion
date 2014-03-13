@@ -5,8 +5,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,16 +41,13 @@ public class Main {
 		
 		// otherwise execute
 		List<TunnelInstance> instances = options.getTunnels();
-
-		// create executor group
-		Executor pool = Executors.newCachedThreadPool();
 				
 		// calculate threads
 		int workers = options.getWorkers();
 		if(workers < 1) {
 			workers = 1;
 		}
-		EventLoopGroup eventGroup = new NioEventLoopGroup(workers, pool);
+		EventLoopGroup eventGroup = new NioEventLoopGroup(workers);
 		logger.info("Using {} workers", workers);
 		
 		// only start if some instances exist
@@ -60,7 +55,7 @@ public class Main {
 			// start servers
 			logger.info("Starting ({}) pre-configured tunnels...", instances.size());
 			for(TunnelInstance instance : instances) {
-				Tunnel server = new Tunnel(new NioEventLoopGroup(1, pool), eventGroup, instance);
+				Tunnel server = new Tunnel(new NioEventLoopGroup(1), eventGroup, instance);
 				server.start();
 			}
 		} else {
@@ -69,7 +64,7 @@ public class Main {
 		
 		// start management interface, if needed
 		if(options.isManagement()) {
-			ManagementServer server = new ManagementServer(instances, pool, eventGroup, options);
+			ManagementServer server = new ManagementServer(instances, eventGroup, options);
 			server.start();
 		}
 		
