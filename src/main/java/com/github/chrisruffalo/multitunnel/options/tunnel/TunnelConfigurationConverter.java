@@ -1,13 +1,13 @@
 package com.github.chrisruffalo.multitunnel.options.tunnel;
 
 import com.beust.jcommander.IStringConverter;
-import com.github.chrisruffalo.multitunnel.model.TunnelInstance;
+import com.github.chrisruffalo.multitunnel.model.TunnelConfiguration;
 
-public class TunnelConverter implements IStringConverter<TunnelInstance> {
+public class TunnelConfigurationConverter implements IStringConverter<TunnelConfiguration> {
 
 	@Override
-	public TunnelInstance convert(String arg0) {
-		TunnelInstance instance = new TunnelInstance();
+	public TunnelConfiguration convert(String arg0) {
+		TunnelConfiguration instance = new TunnelConfiguration();
 		
 		String[] split = arg0.split(":");
 		

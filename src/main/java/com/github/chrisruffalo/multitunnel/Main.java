@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.beust.jcommander.JCommander;
-import com.github.chrisruffalo.multitunnel.model.TunnelInstance;
+import com.github.chrisruffalo.multitunnel.model.TunnelConfiguration;
 import com.github.chrisruffalo.multitunnel.options.Options;
 import com.github.chrisruffalo.multitunnel.tunnel.Tunnel;
 import com.github.chrisruffalo.multitunnel.util.MultiTunnelProperties;
@@ -26,7 +26,7 @@ public class Main {
 		Options options = new Options();
 		JCommander commander = new JCommander(options);
 		commander.setAllowAbbreviatedOptions(true);
-		commander.setProgramName("multi-tunnel v" + MultiTunnelProperties.INSTANCE.version());
+		commander.setProgramName(MultiTunnelProperties.INSTANCE.title() + " v" + MultiTunnelProperties.INSTANCE.version());
 	
 		// parse
 		commander.parse(args);
@@ -46,7 +46,7 @@ public class Main {
 		Logger logger = LoggerFactory.getLogger("main");
 		
 		// otherwise execute
-		List<TunnelInstance> instances = options.getTunnels();
+		List<TunnelConfiguration> instances = options.getTunnels();
 				
 		// calculate threads
 		int workers = options.getWorkers();
@@ -60,7 +60,7 @@ public class Main {
 		if(instances != null && !instances.isEmpty()) {
 			// start servers
 			logger.info("Starting ({}) pre-configured tunnels...", instances.size());
-			for(TunnelInstance instance : instances) {
+			for(TunnelConfiguration instance : instances) {
 				Tunnel server = new Tunnel(new NioEventLoopGroup(1), eventGroup, instance);
 				server.start();
 			}

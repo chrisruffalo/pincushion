@@ -1,6 +1,6 @@
 package com.github.chrisruffalo.multitunnel.model;
 
-public class TunnelInstance {
+public class TunnelConfiguration {
 
 	private int sourcePort;
 	

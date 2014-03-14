@@ -4,17 +4,17 @@ import java.util.List;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import com.github.chrisruffalo.multitunnel.model.TunnelInstance;
-import com.github.chrisruffalo.multitunnel.options.tunnel.TunnelConverter;
+import com.github.chrisruffalo.multitunnel.model.TunnelConfiguration;
+import com.github.chrisruffalo.multitunnel.options.tunnel.TunnelConfigurationConverter;
 
 @Parameters()
 public class Options {
 
 	@Parameter(names={"--tunnel", "-t"}
 			, description="Creates a tunnel using the format '<sourcePort>:<destinationHost>:<destinationPort>'.  You may have more than one tunnel but at least one is required."
-			, converter=TunnelConverter.class
+			, converter=TunnelConfigurationConverter.class
 	)
-	private List<TunnelInstance> tunnels;
+	private List<TunnelConfiguration> tunnels;
 	
 	@Parameter(names = {"--help", "-h"}, description="Prints help message.", help = true)
 	private boolean help;
@@ -38,11 +38,11 @@ public class Options {
 		this.management = false;
 	}
 	
-	public List<TunnelInstance>  getTunnels() {
+	public List<TunnelConfiguration>  getTunnels() {
 		return tunnels;
 	}
 
-	public void setTunnels(List<TunnelInstance>  tunnels) {
+	public void setTunnels(List<TunnelConfiguration>  tunnels) {
 		this.tunnels = tunnels;
 	}
 

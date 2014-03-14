@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.chrisruffalo.multitunnel.client.ClientFactory;
-import com.github.chrisruffalo.multitunnel.model.TunnelInstance;
+import com.github.chrisruffalo.multitunnel.model.TunnelConfiguration;
 
 public class Tunnel {
 
@@ -31,7 +31,7 @@ public class Tunnel {
 	
 	private final Logger logger;
 	
-	public Tunnel(EventLoopGroup bossGroup, EventLoopGroup workerGroup, TunnelInstance instance) {
+	public Tunnel(EventLoopGroup bossGroup, EventLoopGroup workerGroup, TunnelConfiguration instance) {
 		this.bossGroup = bossGroup;
 		this.workerGroup = workerGroup;
 		this.port = instance.getSourcePort();
