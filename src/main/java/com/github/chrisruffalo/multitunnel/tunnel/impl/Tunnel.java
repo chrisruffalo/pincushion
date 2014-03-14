@@ -31,12 +31,16 @@ public class Tunnel {
 	
 	private final Logger logger;
 	
-	public Tunnel(EventLoopGroup bossGroup, EventLoopGroup workerGroup, TunnelConfiguration instance) {
+	private final TunnelConfiguration configuration;
+	
+	public Tunnel(EventLoopGroup bossGroup, EventLoopGroup workerGroup, TunnelConfiguration configuration) {
 		this.bossGroup = bossGroup;
 		this.workerGroup = workerGroup;
-		this.port = instance.getSourcePort();
-		this.destinationHost = instance.getDestHost();
-		this.destinationPort = instance.getDestPort();
+		this.port = configuration.getSourcePort();
+		this.destinationHost = configuration.getDestHost();
+		this.destinationPort = configuration.getDestPort();
+		
+		this.configuration = configuration;
 		
 		this.logger = LoggerFactory.getLogger("tunnel [" + port + "] => [" + destinationHost + ":" + destinationPort + "]");
 	}
@@ -88,4 +92,8 @@ public class Tunnel {
 		this.logger.info("stopped");
 	}
 
+	public TunnelConfiguration configuration() {
+		return this.configuration;
+	}
+	
 }

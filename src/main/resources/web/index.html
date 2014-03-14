@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app lang="en">
+<html ng-app="multiTunnelApp" lang="en">
 	<head>
 		<!-- meta information -->
 	    <meta charset="utf-8">
@@ -24,6 +24,71 @@
     
 	</head>
 	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse"
+						data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span> <span
+							class="icon-bar"></span> <span class="icon-bar"></span> <span
+							class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">${application.title}</a>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="#">Dashboard</a></li>
+						<li><a href="#">Settings</a></li>
+						<li><a href="#">Profile</a></li>
+						<li><a href="#">Help</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-sm-3 col-md-2 sidebar">
+					<ul class="nav nav-sidebar">
+						<li class="active"><a href="#">Tunnels</a></li>
+						<li><a href="#">Reports</a></li>
+						<li><a href="#">Analytics</a></li>
+						<li><a href="#">Export</a></li>
+					</ul>
+				</div>
+				
+				<!-- body content -->
+				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+					<h2 class="sub-header">Tunnels</h2>
+					
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th></th>
+									<th>source port</th>
+									<th>destination</th>
+									<th>destination port</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody ng-controller="TunnelTableController">
+								<tr ng-repeat="tunnel in tunnels">
+									<td><i class="fa fa-transfer"></i></td>
+									<td>{{tunnel.sourcePort}}</td>
+									<td>{{tunnel.destHost}}</td>
+									<td>{{tunnel.destPort}}</td>
+									<td>
+										<button ng-click="pause($tunnel.sourcePort)" class="btn btn-sm"><i class="fa fa-pause"></i></button>
+										<button ng-click="remove($tunnel.sourcePort)" class="btn btn-sm">remove</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div> <!-- /end body content -->
+			</div>  <!-- /end row -->
+		</div>
 	
 		<!-- load third-party javascript -->
 		<script src="static/js/jquery-2.1.0.min.js"></script>
@@ -31,6 +96,7 @@
 		<script src="static/js/angular.min.js"></script>
 		
 		<!-- load application javascript -->
-		<!-- <script src="app/thing.js"></script> -->
+		<script src="app/js/controllers.js"></script>
+		<script src="app/js/services/tunnels.js"></script>
 	</body>
 </html>

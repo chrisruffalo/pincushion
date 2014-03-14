@@ -5,6 +5,8 @@ import io.netty.channel.EventLoopGroup;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
 
+import javax.servlet.ServletContextEvent;
+
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -14,6 +16,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.resource.Resource;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +35,13 @@ public class ManagementServer {
 	
 	private Logger logger;
 	
+	private final TunnelManager manager;
+	
 	public ManagementServer(TunnelManager manager, EventLoopGroup eventGroup, Options options) {
 		this.managementInterface = options.getManagementInterface();
 		this.managementPort = options.getManagementPort();
+		
+		this.manager = manager;
 		
 		this.logger = LoggerFactory.getLogger("management [" + this.managementInterface + ":" + this.managementPort + "]");
 	}
@@ -53,6 +60,15 @@ public class ManagementServer {
 	    final ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 	    contextHandler.setContextPath("/services");
 
+	    // create context resoruces
+	    contextHandler.addEventListener(new ResteasyBootstrap(){
+            @Override
+            public void contextInitialized(ServletContextEvent event) {
+                super.contextInitialized(event);
+                deployment.getDispatcher().getDefaultContextObjects().put(TunnelManager.class, manager);
+            }
+	    });
+	    
 	    // set prefixes
 	    contextHandler.setInitParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX,"/");
 	    contextHandler.setInitParameter(ResteasyContextParameters.RESTEASY_SCAN,"true");
