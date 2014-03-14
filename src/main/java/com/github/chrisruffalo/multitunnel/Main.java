@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.beust.jcommander.JCommander;
 import com.github.chrisruffalo.multitunnel.model.TunnelConfiguration;
 import com.github.chrisruffalo.multitunnel.options.Options;
-import com.github.chrisruffalo.multitunnel.tunnel.Tunnel;
+import com.github.chrisruffalo.multitunnel.tunnel.TunnelManager;
 import com.github.chrisruffalo.multitunnel.util.MultiTunnelProperties;
 import com.github.chrisruffalo.multitunnel.web.ManagementServer;
 
@@ -46,7 +46,7 @@ public class Main {
 		Logger logger = LoggerFactory.getLogger("main");
 		
 		// otherwise execute
-		List<TunnelConfiguration> instances = options.getTunnels();
+		List<TunnelConfiguration> configurations = options.getTunnels();
 				
 		// calculate threads
 		int workers = options.getWorkers();
@@ -56,21 +56,23 @@ public class Main {
 		EventLoopGroup eventGroup = new NioEventLoopGroup(workers);
 		logger.info("Using {} workers", workers);
 		
+		// create tunnel manager
+		TunnelManager manager = new TunnelManager(eventGroup);
+		
 		// only start if some instances exist
-		if(instances != null && !instances.isEmpty()) {
+		if(configurations != null && !configurations.isEmpty()) {
 			// start servers
-			logger.info("Starting ({}) pre-configured tunnels...", instances.size());
-			for(TunnelConfiguration instance : instances) {
-				Tunnel server = new Tunnel(new NioEventLoopGroup(1), eventGroup, instance);
-				server.start();
+			logger.info("Starting ({}) pre-configured tunnels...", configurations.size());
+			for(TunnelConfiguration configuratoin : configurations) {
+				manager.create(configuratoin);
 			}
 		} else {
-			instances = new LinkedList<>();
+			configurations = new LinkedList<>();
 		}
 		
 		// start management interface, if needed
 		if(options.isManagement()) {
-			ManagementServer server = new ManagementServer(instances, eventGroup, options);
+			ManagementServer server = new ManagementServer(manager, eventGroup, options);
 			server.start();
 		}
 		

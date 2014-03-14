@@ -3,7 +3,6 @@ package com.github.chrisruffalo.multitunnel.web;
 import io.netty.channel.EventLoopGroup;
 
 import java.net.InetSocketAddress;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.jetty.server.Handler;
@@ -19,8 +18,8 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.chrisruffalo.multitunnel.model.TunnelConfiguration;
 import com.github.chrisruffalo.multitunnel.options.Options;
+import com.github.chrisruffalo.multitunnel.tunnel.TunnelManager;
 import com.github.chrisruffalo.multitunnel.web.rest.ManagementApplication;
 
 public class ManagementServer {
@@ -33,7 +32,7 @@ public class ManagementServer {
 	
 	private Logger logger;
 	
-	public ManagementServer(List<TunnelConfiguration> instances, EventLoopGroup eventGroup, Options options) {
+	public ManagementServer(TunnelManager manager, EventLoopGroup eventGroup, Options options) {
 		this.managementInterface = options.getManagementInterface();
 		this.managementPort = options.getManagementPort();
 		

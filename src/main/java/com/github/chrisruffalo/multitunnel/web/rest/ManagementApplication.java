@@ -20,60 +20,65 @@ import com.github.chrisruffalo.multitunnel.web.ManagementServer;
 
 public class ManagementApplication extends Application {
 
-	private final Set<Class<? extends Annotation>> MARKERS;
-
-	private final Reflections REFLECTIONS;
+	private final Set<Class<?>> types;
+	
+	private final Set<Object> singletons;
 	
 	public ManagementApplication() {
 		// create markers
-		this.MARKERS = new HashSet<>();
+		final Set<Class<? extends Annotation>> markers = new HashSet<>();
 		
-		this.MARKERS.add(GET.class);
-		this.MARKERS.add(PUT.class);
-		this.MARKERS.add(POST.class);
-		this.MARKERS.add(DELETE.class);
-		this.MARKERS.add(Path.class);
-		this.MARKERS.add(Produces.class);
-		this.MARKERS.add(Consumes.class);
+		markers.add(GET.class);
+		markers.add(PUT.class);
+		markers.add(POST.class);
+		markers.add(DELETE.class);
+		markers.add(Path.class);
+		markers.add(Produces.class);
+		markers.add(Consumes.class);
 		
 		// scan local package for REST services
 		String packageName = ManagementServer.class.getName();
 		packageName = packageName.substring(0, packageName.lastIndexOf(".") - 1);
 		
-		this.REFLECTIONS = new Reflections(packageName);
+		// create reflective scanner for given package
+		Reflections reflections = new Reflections(packageName);
+		
+		// scan and add types
+		this.types = new HashSet<>();
+		this.types.addAll(ManagementApplication.types(reflections, markers));
+		this.types.addAll(ManagementApplication.methods(reflections, markers));
 
+		// create singletons
+		this.singletons = new HashSet<>();
 	}
 	
 	@Override
 	public Set<Class<?>> getClasses() {
-		Set<Class<?>> classes = new HashSet<>();
-		classes.addAll(super.getClasses());
-
-		// get types by annotation at the class
-		// and method level
-		classes.addAll(this.types());	
-		classes.addAll(this.methods());
-		
-		return classes;
+		return this.types;
 	}
 	
-	private Set<Class<?>> types() {
+	@Override
+	public Set<Object> getSingletons() {
+		return this.singletons;
+	}
+
+	private static Set<Class<?>> types(Reflections reflections, Set<Class<? extends Annotation>> markers) {
 		
 		Set<Class<?>> found = new HashSet<>();
 		
-		for(Class<? extends Annotation> type : this.MARKERS) {
-			found.addAll(this.REFLECTIONS.getTypesAnnotatedWith(type, true));
+		for(Class<? extends Annotation> type : markers) {
+			found.addAll(reflections.getTypesAnnotatedWith(type, true));
 		}
 		
 		return found;
 	}
 	
-	private Set<Class<?>> methods() {
+	private static Set<Class<?>> methods(Reflections reflections, Set<Class<? extends Annotation>> markers) {
 
 		Set<Class<?>> found = new HashSet<>();
 		
-		for(Class<? extends Annotation> type : this.MARKERS) {
-			Set<Method> methods = this.REFLECTIONS.getMethodsAnnotatedWith(type);
+		for(Class<? extends Annotation> type : markers) {
+			Set<Method> methods = reflections.getMethodsAnnotatedWith(type);
 			for(Method method : methods) {
 				found.add(method.getDeclaringClass());
 			}

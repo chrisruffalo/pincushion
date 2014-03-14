@@ -1,4 +1,4 @@
-package com.github.chrisruffalo.multitunnel.tunnel;
+package com.github.chrisruffalo.multitunnel.tunnel.impl;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
