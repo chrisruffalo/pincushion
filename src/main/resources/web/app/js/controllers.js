@@ -7,12 +7,20 @@ multiTunnelApp.controller('TunnelTableController', function ($scope, $http, $tim
 	};
 	
 	$scope.remove = function(port) {
+		// wait to update
 		$scope.pauseRefresh();
 		
-		
+		// delete
+		$.ajax({
+			type: 'DELETE',
+			url: 'services/tunnel/' + port + '/remove'			
+		}).always(function() {
+			$scope.updateTable();
+		})
 	}
 	
 	$scope.add = function(tunnel) {
+		// wait to update
 		$scope.pauseRefresh();
 				
 	};

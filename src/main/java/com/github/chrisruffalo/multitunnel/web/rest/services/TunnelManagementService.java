@@ -2,6 +2,7 @@ package com.github.chrisruffalo.multitunnel.web.rest.services;
 
 import java.util.List;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -29,7 +30,7 @@ public class TunnelManagementService {
 	}
 	
 	@Path("/{port}/remove")
-	@GET
+	@DELETE
 	@Produces(MediaType.TEXT_PLAIN)
 	public boolean removeTunnelByPort(@PathParam("port") int port) {
 		this.manager.stop(port);

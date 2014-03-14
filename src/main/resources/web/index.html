@@ -37,10 +37,7 @@
 				</div>
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav navbar-right">
-						<li><a href="#">Dashboard</a></li>
-						<li><a href="#">Settings</a></li>
-						<li><a href="#">Profile</a></li>
-						<li><a href="#">Help</a></li>
+						<li><a href="#">Tunnels</a></li>
 					</ul>
 				</div>
 			</div>
@@ -51,9 +48,6 @@
 				<div class="col-sm-3 col-md-2 sidebar">
 					<ul class="nav nav-sidebar">
 						<li class="active"><a href="#">Tunnels</a></li>
-						<li><a href="#">Reports</a></li>
-						<li><a href="#">Analytics</a></li>
-						<li><a href="#">Export</a></li>
 					</ul>
 				</div>
 				
@@ -79,8 +73,8 @@
 									<td>{{tunnel.destHost}}</td>
 									<td>{{tunnel.destPort}}</td>
 									<td>
-										<button ng-click="pause($tunnel.sourcePort)" class="btn btn-sm"><i class="fa fa-pause"></i></button>
-										<button ng-click="remove($tunnel.sourcePort)" class="btn btn-sm">remove</button>
+										<button ng-click="pause(tunnel.sourcePort)" class="btn btn-sm"><i class="fa fa-pause"></i></button>
+										<button ng-click="remove(tunnel.sourcePort)" class="btn btn-sm"><i class="fa fa-times"></i></button>
 									</td>
 								</tr>
 							</tbody>
