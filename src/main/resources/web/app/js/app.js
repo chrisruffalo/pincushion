@@ -15,3 +15,9 @@ multiTunnelApp.config(['$routeProvider',
                 redirectTo: '/tunnels'
         });
 }]);
+
+multiTunnelApp.filter('bytesFormatter', function() {
+   return function(bytes) {
+	   return style.prettyBytes(bytes);
+   }
+});

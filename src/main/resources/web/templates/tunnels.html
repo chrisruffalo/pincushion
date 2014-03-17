@@ -29,9 +29,9 @@
 				<!-- traffic -->
 				<td>
 					<span ng-if="tunnel.stats">
-						{{tunnel.stats.read}}
+						{{tunnel.stats.read | bytesFormatter}}
 						<i class="fa fa-arrow-up"></i>
-						{{tunnel.stats.returned}}
+						{{tunnel.stats.returned | bytesFormatter}}
 						<i class="fa fa-arrow-down"></i>
 					</span>
 				<td>

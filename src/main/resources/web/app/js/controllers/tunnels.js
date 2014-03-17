@@ -1,4 +1,5 @@
 multiTunnelApp.controller('TunnelTableController', function ($scope, $http, $timeout) {
+	// pause
 	$scope.pause = function(port) {
 		$scope.pauseRefresh();
 		
