@@ -1,26 +1,13 @@
-var multiTunnelApp = angular.module('multiTunnelApp', ['ngRoute']);
-
-multiTunnelApp.config(['$routeProvider',
-    function($routeProvider) {
-        $routeProvider.
-            when('/tunnels', {
-                templateUrl: 'templates/tunnels.html',
-                controller: 'TunnelTableController'
-        }).
-            when('/modules', {
-                templateUrl: 'templates/modules.html',
-                controller: 'ModulesTableController'
-        }).
-            otherwise({
-                redirectTo: '/tunnels'
-        });
-}]);
- 
 multiTunnelApp.controller('TunnelTableController', function ($scope, $http, $timeout) {
 	$scope.pause = function(port) {
 		$scope.pauseRefresh();
 		
 	};
+	
+	// what to do when the route has changed
+	$scope.$on('$routeChangeSuccess', function () {
+		  style.toggleActive('tunnels');
+	});
 	
 	$scope.remove = function(port) {
 		// wait to update
@@ -79,8 +66,4 @@ multiTunnelApp.controller('TunnelTableController', function ($scope, $http, $tim
 	
 	// initial load
 	$scope.updateTable();
-});
-
-multiTunnelApp.controller('ModulesTableController', function ($scope, $http, $timeout) {
-	
 });
