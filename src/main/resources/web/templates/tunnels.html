@@ -16,7 +16,8 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="tunnel in tunnels">
-				<td><i class="fa fa-transfer"></i></td>
+				<!-- general tunnel status -->
+				<td>{{tunnel.status}}</td>
 				<!-- info -->
 				<td>{{tunnel.configruation.sourceInterface}}</td>
 				<td>{{tunnel.configruation.sourcePort}}</td>
@@ -35,8 +36,9 @@
 						<i class="fa fa-arrow-down"></i>
 					</span>
 				<td>
-					<button ng-click="pause(tunnel.sourcePort)" class="btn btn-sm"><i class="fa fa-pause"></i></button>
-					<button ng-click="remove(tunnel.sourcePort)" class="btn btn-sm"><i class="fa fa-times"></i></button>
+					<button ng-if="tunnel.status == 'PAUSED'" ng-click="tunnel.$resume()" class="btn btn-sm"><i class="fa fa-play"></i></button>
+					<button ng-if="tunnel.status == 'RUNNING'" ng-click="tunnel.$pause()" class="btn btn-sm"><i class="fa fa-pause"></i></button>
+					<button ng-click="tunnel.$remove()" class="btn btn-sm"><i class="fa fa-times"></i></button>
 				</td>
 			</tr>
 		</tbody>

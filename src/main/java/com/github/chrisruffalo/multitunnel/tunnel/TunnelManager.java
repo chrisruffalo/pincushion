@@ -21,7 +21,7 @@ import com.github.chrisruffalo.multitunnel.tunnel.impl.Tunnel;
 
 public class TunnelManager {
 	
-	private final Map<Integer, Tunnel> tunnels;
+	private final Map<String, Tunnel> tunnels;
 
 	private final Set<Integer> blocked;
 	
@@ -52,7 +52,8 @@ public class TunnelManager {
 		Tunnel tunnel = new Tunnel(new NioEventLoopGroup(2), this.workerGroup, config);
 		
 		// save
-		this.tunnels.put(config.getSourcePort(), tunnel);
+		this.tunnels.put(tunnel.id(), tunnel);
+		this.blocked.add(config.getSourcePort());
 		
 		// start tunnel
 		tunnel.start();
@@ -64,16 +65,40 @@ public class TunnelManager {
 		return reference;
 	}
 	
-	public void stop(int port) {
-		Tunnel tunnel = this.tunnels.get(port);
+	public void stop(String id) {
+		Tunnel tunnel = this.tunnels.get(id);
 		
 		if(tunnel != null) {
 			tunnel.stop();
 			
-			this.tunnels.remove(port);
+			this.tunnels.remove(tunnel.id());
+			
+			this.blocked.remove(tunnel.configuration().getSourcePort());
 		} else {
-			this.logger.info("could not stop tunnel @ port:{}", port);
+			this.logger.info("could not stop tunnel id:{}", id);
 		}
+	}
+	
+	public TunnelReference pause(String id) {
+		Tunnel tunnel = this.tunnels.get(id);
+		
+		if(tunnel != null) {
+			tunnel.pause();
+			return tunnel.ref();
+		}
+		
+		return null;
+	}
+	
+
+	public TunnelReference resume(String id) {
+		Tunnel tunnel = this.tunnels.get(id);
+		
+		if(tunnel != null) {
+			tunnel.resume();
+			return tunnel.ref();
+		}
+		return null;
 	}
 	
 	public List<TunnelReference> info() {
@@ -85,10 +110,7 @@ public class TunnelManager {
 		List<TunnelReference> configurations = new ArrayList<>(this.tunnels.size());
 		
 		for(Tunnel t : this.tunnels.values()) {
-			TunnelReference reference = new TunnelReference();
-			reference.setConfigruation(t.configuration());
-			reference.setStats(t.stats());
-			configurations.add(reference);
+			configurations.add(t.ref());
 		}
 		
 		return configurations;

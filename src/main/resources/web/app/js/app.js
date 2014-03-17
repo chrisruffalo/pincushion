@@ -1,4 +1,4 @@
-var multiTunnelApp = angular.module('multiTunnelApp', ['ngRoute']);
+var multiTunnelApp = angular.module('multiTunnelApp', ['ngResource','ngRoute']);
 
 multiTunnelApp.config(['$routeProvider',
     function($routeProvider) {

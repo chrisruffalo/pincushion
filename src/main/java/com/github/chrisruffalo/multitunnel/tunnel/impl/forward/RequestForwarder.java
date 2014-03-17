@@ -1,4 +1,4 @@
-package com.github.chrisruffalo.multitunnel.tunnel.impl;
+package com.github.chrisruffalo.multitunnel.tunnel.impl.forward;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;

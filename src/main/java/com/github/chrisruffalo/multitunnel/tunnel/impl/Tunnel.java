@@ -9,15 +9,23 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.chrisruffalo.multitunnel.client.ClientFactory;
 import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelConfiguration;
+import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelReference;
 import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelStatistics;
+import com.github.chrisruffalo.multitunnel.tunnel.impl.control.PauseController;
+import com.github.chrisruffalo.multitunnel.tunnel.impl.control.StatisticsCollector;
+import com.github.chrisruffalo.multitunnel.tunnel.impl.forward.RequestForwarder;
 
 public class Tunnel {
 
+	private final String id;
+	
 	private final EventLoopGroup bossGroup;
 	
 	private final EventLoopGroup workerGroup;
@@ -38,7 +46,13 @@ public class Tunnel {
 	
 	private StatisticsCollector collector;
 	
+	private PauseController pauseController;
+	
+	private TunnelStatus status;
+	
 	public Tunnel(EventLoopGroup bossGroup, EventLoopGroup workerGroup, TunnelConfiguration configuration) {
+		this.id = UUID.randomUUID().toString();
+		
 		this.bossGroup = bossGroup;
 		this.workerGroup = workerGroup;
 		this.sourceInterface = configuration.getSourceInterface();
@@ -55,8 +69,9 @@ public class Tunnel {
 		// create new client factory
 		final ClientFactory factory = new ClientFactory(this.workerGroup);
 		
-		// create
+		// create pipeline components
 		this.collector = new StatisticsCollector();
+		this.pauseController = new PauseController();
 		
 		// create server bootstrap
         ServerBootstrap b = new ServerBootstrap();
@@ -67,6 +82,9 @@ public class Tunnel {
             public void initChannel(SocketChannel ch) throws Exception {
 				// add stats collector to head of pipeline
 				ch.pipeline().addFirst("stats", collector);
+				
+				// add pause controller even before that...
+				ch.pipeline().addFirst("pause", pauseController);
 				
 				// create forwarding client bootstrapper 
 				Bootstrap bootstrap = factory.bootstrap(destinationHost, destinationPort);
@@ -89,9 +107,24 @@ public class Tunnel {
 			this.channelFuture = b.bind(this.sourceInterface, this.sourcePort).sync();
 
 			this.logger.info("started");
+			
+			// set status
+			this.status = TunnelStatus.RUNNING;
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void pause() {
+		this.pauseController.pause(true);
+		this.logger.info("paused");
+		this.status = TunnelStatus.PAUSED;
+	}
+	
+	public void resume() {
+		this.pauseController.pause(false);
+		this.logger.info("resumed");
+		this.status = TunnelStatus.RUNNING;
 	}
 	
 	public void stop() {
@@ -102,6 +135,7 @@ public class Tunnel {
 		this.channelFuture = null;
 		
 		this.logger.info("stopped");
+		this.status = TunnelStatus.STOPPED;
 	}
 
 	public TunnelConfiguration configuration() {
@@ -112,4 +146,22 @@ public class Tunnel {
 		return this.collector.collect();
 	}
 	
+	public String id() {
+		return this.id;
+	}
+
+	public TunnelStatus status() {
+		return this.status;
+	}
+
+	public TunnelReference ref() {
+		TunnelReference ref = new TunnelReference();
+		
+		ref.setId(this.id);
+		ref.setStats(this.collector.collect());
+		ref.setStatus(this.status);
+		ref.setConfigruation(this.configuration);
+		
+		return ref;
+	}
 }

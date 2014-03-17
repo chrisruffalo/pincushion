@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -31,12 +32,26 @@ public class TunnelManagementService {
 		return this.manager.info();
 	}
 	
-	@Path("/{port}/remove")
+	@Path("/{id}/remove")
 	@DELETE
 	@Produces(MediaType.TEXT_PLAIN)
-	public boolean removeTunnelByPort(@PathParam("port") int port) {
-		this.manager.stop(port);
+	public boolean removeTunnelById(@PathParam("id") String id) {
+		this.manager.stop(id);
 		return true;
+	}
+	
+	@Path("/{id}/pause")
+	@POST
+	@Produces(MediaType.TEXT_PLAIN)
+	public TunnelReference pauseTunnelById(@PathParam("id") String id) {
+		return this.manager.pause(id);
+	}
+	
+	@Path("/{id}/resume")
+	@POST
+	@Produces(MediaType.TEXT_PLAIN)
+	public TunnelReference resumeTunnelById(@PathParam("id") String id) {
+		return this.manager.resume(id);
 	}
 	
 	@Path("/add")

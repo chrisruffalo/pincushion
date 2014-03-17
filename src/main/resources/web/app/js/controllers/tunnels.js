@@ -1,4 +1,18 @@
-multiTunnelApp.controller('TunnelTableController', function ($scope, $http, $timeout) {
+multiTunnelApp.controller('TunnelTableController', function ($scope, $resource, $timeout) {
+	// create tunnel service
+	$scope.TunnelService = $resource('services/tunnel/info', [],
+		{ 
+			'save':   {method:'POST'},
+			'query':  {method:'GET', isArray:true},
+			'pause': {method:'POST', url: 'services/tunnel/:tunnelId/pause', params: {tunnelId:"@id"}},
+			'resume': {method:'POST', url: 'services/tunnel/:tunnelId/resume', params: {tunnelId:"@id"}},
+			'remove': {method:'DELETE', url: 'services/tunnel/:tunnelId/remove', params: {tunnelId:"@id"}},
+		}
+	);
+	
+	// data
+	$scope.tunnels = [];
+	
 	// pause
 	$scope.pause = function(port) {
 		$scope.pauseRefresh();
@@ -9,19 +23,6 @@ multiTunnelApp.controller('TunnelTableController', function ($scope, $http, $tim
 	$scope.$on('$routeChangeSuccess', function () {
 		  style.toggleActive('tunnels');
 	});
-	
-	$scope.remove = function(port) {
-		// wait to update
-		$scope.pauseRefresh();
-		
-		// delete
-		$.ajax({
-			type: 'DELETE',
-			url: 'services/tunnel/' + port + '/remove'			
-		}).always(function() {
-			$scope.updateTable();
-		})
-	}
 	
 	$scope.add = function(tunnel) {
 		// wait to update
@@ -57,12 +58,13 @@ multiTunnelApp.controller('TunnelTableController', function ($scope, $http, $tim
 		// don't double-refresh
 		$scope.pauseRefresh();
 		
-		$http.get('services/tunnel/info').success(function(data) {
-			// save new data
-			$scope.tunnels = data;
-			// start refresh
-			$scope.startRefresh();
-		});
+		(function tick(){
+			// use service to query for all resources
+			var newTunnels = $scope.TunnelService.query(function() {
+				$scope.tunnels = newTunnels;
+			    $scope.startRefresh();
+			});	
+		})();
 	};
 	
 	// initial load

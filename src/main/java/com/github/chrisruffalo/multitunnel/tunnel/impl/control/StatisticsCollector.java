@@ -1,4 +1,4 @@
-package com.github.chrisruffalo.multitunnel.tunnel.impl;
+package com.github.chrisruffalo.multitunnel.tunnel.impl.control;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
