@@ -1,10 +1,15 @@
 <h2 class="sub-header">Tunnels</h2>
 
+<!-- button to add tunnel -->
+<a href="#add-tunnel" class="btn btn-primary btn-lg pull-right"><i class="fa fa-plus"></i> add new tunnel</a>
+
+<!-- table of items -->
 <div class="table-responsive">
 	<table class="table table-striped">
 		<thead>
 			<tr>
-				<th><!-- icon --></th>
+				<th><!-- icon/status --></th>
+				<th>name</th>
 				<th>source interface</th>
 				<th>source port</th>
 				<th>destination</th>
@@ -19,6 +24,7 @@
 				<!-- general tunnel status -->
 				<td>{{tunnel.status}}</td>
 				<!-- info -->
+				<td>{{tunnel.configruation.name}}</td>
 				<td>{{tunnel.configruation.sourceInterface}}</td>
 				<td>{{tunnel.configruation.sourcePort}}</td>
 				<td>{{tunnel.configruation.destHost}}</td>
@@ -36,9 +42,10 @@
 						<i class="fa fa-arrow-down"></i>
 					</span>
 				<td>
-					<button ng-if="tunnel.status == 'PAUSED'" ng-click="tunnel.$resume()" class="btn btn-sm"><i class="fa fa-play"></i></button>
-					<button ng-if="tunnel.status == 'RUNNING'" ng-click="tunnel.$pause()" class="btn btn-sm"><i class="fa fa-pause"></i></button>
-					<button ng-click="tunnel.$remove()" class="btn btn-sm"><i class="fa fa-times"></i></button>
+					<a href="#edit-tunnel/{{tunnel.id}}" class="btn btn-default btn-sm"><i class="fa fa-pencil"></i></a>
+					<button ng-if="tunnel.status == 'PAUSED'" ng-click="tunnel.$resume()" class="btn btn-sm btn-default"><i class="fa fa-play"></i></button>
+					<button ng-if="tunnel.status == 'RUNNING'" ng-click="tunnel.$pause()" class="btn btn-sm btn-default"><i class="fa fa-pause"></i></button>
+					<button ng-click="tunnel.$remove()" class="btn btn-sm btn-default"><i class="fa fa-times"></i></button>
 				</td>
 			</tr>
 		</tbody>

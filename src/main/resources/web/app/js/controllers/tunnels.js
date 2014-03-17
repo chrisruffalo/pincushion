@@ -1,35 +1,23 @@
-multiTunnelApp.controller('TunnelTableController', function ($scope, $resource, $timeout) {
-	// create tunnel service
-	$scope.TunnelService = $resource('services/tunnel/info', [],
-		{ 
-			'save':   {method:'POST'},
-			'query':  {method:'GET', isArray:true},
-			'pause': {method:'POST', url: 'services/tunnel/:tunnelId/pause', params: {tunnelId:"@id"}},
-			'resume': {method:'POST', url: 'services/tunnel/:tunnelId/resume', params: {tunnelId:"@id"}},
-			'remove': {method:'DELETE', url: 'services/tunnel/:tunnelId/remove', params: {tunnelId:"@id"}},
-		}
-	);
-	
+multiTunnelApp.controller('TunnelTableController', function ($scope, $resource, $timeout, Tunnel) {
 	// data
 	$scope.tunnels = [];
 	
-	// pause
-	$scope.pause = function(port) {
-		$scope.pauseRefresh();
-		
-	};
-	
 	// what to do when the route has changed
 	$scope.$on('$routeChangeSuccess', function () {
-		  style.toggleActive('tunnels');
+		// update styles
+		style.toggleActive('tunnels');
+		  
+		// initial load of table elements
+		$scope.updateTable();
 	});
 	
-	$scope.add = function(tunnel) {
-		// wait to update
+	// what to do when leaving the page
+	$scope.$on('$locationChangeStart', function () {
+		// stop table update
 		$scope.pauseRefresh();
-				
-	};
+	});
 	
+	// pause refreshing
 	$scope.pauseRefresh = function() {
 		// cancel previous timer if it exists
 		if($scope.updateTimer) {
@@ -39,6 +27,7 @@ multiTunnelApp.controller('TunnelTableController', function ($scope, $resource, 
 		}
 	}
 	
+	// start refreshing the table
 	$scope.startRefresh = function() {
 		// pause refresh
 		$scope.pauseRefresh();
@@ -52,21 +41,20 @@ multiTunnelApp.controller('TunnelTableController', function ($scope, $resource, 
 	    )
 	}
 	
-	// scope update function
+	// load values to the table
 	$scope.updateTable = function() {
-		
+				
 		// don't double-refresh
 		$scope.pauseRefresh();
 		
 		(function tick(){
 			// use service to query for all resources
-			var newTunnels = $scope.TunnelService.query(function() {
+			var newTunnels = Tunnel.query(function() {
 				$scope.tunnels = newTunnels;
 			    $scope.startRefresh();
 			});	
 		})();
 	};
 	
-	// initial load
-	$scope.updateTable();
+
 });

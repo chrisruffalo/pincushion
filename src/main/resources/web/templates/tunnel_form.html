@@ -1,0 +1,17 @@
+<h2 class="sub-header">Add/Edit Tunnel</h2>
+
+
+<div>
+  <form novalidate class="simple-form">
+  	Name: <input type="text" ng-model="tunnel.name" /><br />
+    Bind Interface: <input type="text" ng-model="tunnel.sourceInterface" /><br />
+    Source Port: <input type="text" ng-model="tunnel.sourcePort" /><br />
+    Destination Host: <input type="text" ng-model="tunnel.destHost" /><br />
+    Destination Port: <input type="text" ng-model="tunnel.destPort" /><br />
+
+    <button ng-click="reset()">RESET</button>
+    <button ng-click="save(tunnel)">SAVE</button>
+  </form>
+  <pre>form = {{tunnel | json}}</pre>
+  <pre>master = {{master | json}}</pre>
+</div>

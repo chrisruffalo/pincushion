@@ -32,6 +32,13 @@ public class TunnelManagementService {
 		return this.manager.info();
 	}
 	
+	@Path("/{id}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public TunnelReference getTunnelById(@PathParam("id") String id) {
+		return this.manager.get(id);
+	}
+	
 	@Path("/{id}/remove")
 	@DELETE
 	@Produces(MediaType.TEXT_PLAIN)
@@ -42,23 +49,31 @@ public class TunnelManagementService {
 	
 	@Path("/{id}/pause")
 	@POST
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public TunnelReference pauseTunnelById(@PathParam("id") String id) {
 		return this.manager.pause(id);
 	}
 	
 	@Path("/{id}/resume")
 	@POST
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public TunnelReference resumeTunnelById(@PathParam("id") String id) {
 		return this.manager.resume(id);
 	}
 	
-	@Path("/add")
+	@Path("/start")
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
-	public TunnelReference addTunnel(TunnelConfiguration configuration) {
+	public TunnelReference start(TunnelConfiguration configuration) {
 		TunnelReference ref = this.manager.create(configuration);
+		return ref;
+	}
+	
+	@Path("/{id}/update")
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	public TunnelReference start(@PathParam("id") String id, TunnelConfiguration configuration) {
+		TunnelReference ref = this.manager.update(id, configuration);
 		return ref;
 	}
 }

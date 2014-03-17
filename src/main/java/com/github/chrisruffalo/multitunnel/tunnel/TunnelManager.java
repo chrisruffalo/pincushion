@@ -115,5 +115,20 @@ public class TunnelManager {
 		
 		return configurations;
 	}
+
+	public TunnelReference get(String id) {
+		Tunnel tunnel = this.tunnels.get(id);
+		
+		if(tunnel != null) {
+			return tunnel.ref();
+		}		
+		
+		return null;
+	}
+
+	public TunnelReference update(String id, TunnelConfiguration configuration) {
+		this.stop(id);
+		return this.create(configuration);
+	}
 	
 }
