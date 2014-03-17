@@ -5,6 +5,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.ResourceLeakDetector.Level;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,7 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.beust.jcommander.JCommander;
-import com.github.chrisruffalo.multitunnel.model.TunnelConfiguration;
+import com.github.chrisruffalo.multitunnel.model.configuration.MultiTunnelConfiguration;
+import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelConfiguration;
 import com.github.chrisruffalo.multitunnel.options.Options;
 import com.github.chrisruffalo.multitunnel.tunnel.TunnelManager;
 import com.github.chrisruffalo.multitunnel.util.MultiTunnelProperties;
@@ -39,6 +44,42 @@ public class Main {
 			return;
 		}
 		
+		// do example print out
+		if(options.isCreateExample()) {
+			File example = new File("./multi-tunnel.configuration.example");
+			if(example.exists()) {
+				example.delete();
+				try {
+					example.createNewFile();
+				} catch (IOException e) {
+					System.out.println("Could not create example file: " + e.getMessage());
+					return;
+				}
+			}
+			
+			// output stream
+			try (FileOutputStream output = new FileOutputStream(example)) {
+				MultiTunnelConfiguration exampleConfiguration = new MultiTunnelConfiguration();
+				exampleConfiguration.write(output);
+				System.out.println("Example file written to: " + example.getAbsolutePath());
+				
+				output.flush();
+			} catch (FileNotFoundException e) {
+				System.out.println("Could not create example file: " + e.getMessage());
+				return;
+			} catch (IOException e) {
+				System.out.println("Error while creating example file: " + e.getMessage());
+				return;
+			} 
+			
+			// quit after creating example
+			return;
+		}
+		
+		// load multi-tunnel configuration file (if available) or load defaults from
+		// classpath
+		MultiTunnelConfiguration config = new MultiTunnelConfiguration();
+		
 		// set netty stuff and various environment things
 		ResourceLeakDetector.setLevel(Level.DISABLED);		
 		
@@ -49,7 +90,7 @@ public class Main {
 		List<TunnelConfiguration> configurations = options.getTunnels();
 				
 		// calculate threads
-		int workers = options.getWorkers();
+		int workers = config.getWorkers();
 		if(workers < 1) {
 			workers = 1;
 		}
@@ -70,12 +111,9 @@ public class Main {
 			configurations = new LinkedList<>();
 		}
 		
-		// start management interface, if needed
-		if(options.isManagement()) {
-			ManagementServer server = new ManagementServer(manager, eventGroup, options);
-			server.start();
-		}
-		
+		ManagementServer server = new ManagementServer(manager, eventGroup, config);
+		server.start();
+			
 		// and wait
 		while(true) {
 			try {

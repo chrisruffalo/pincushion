@@ -105,11 +105,25 @@
 		    <version>0.9.9-RC1</version>
 		</dependency>
 		
-		<!-- command/configuration -->
+		<!-- command line configuration -->
 		<dependency>
 		  <groupId>com.beust</groupId>
 		  <artifactId>jcommander</artifactId>
 		  <version>1.30</version>
+		</dependency>
+		
+		<!-- embedded database -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.3.175</version>
+		</dependency>
+		
+		<!-- orm -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>4.3.4.Final</version>
 		</dependency>
 
 		<!-- testing/junit -->

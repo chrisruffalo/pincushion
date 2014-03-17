@@ -15,7 +15,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.chrisruffalo.multitunnel.model.TunnelConfiguration;
+import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelConfiguration;
+import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelReference;
 import com.github.chrisruffalo.multitunnel.tunnel.impl.Tunnel;
 
 public class TunnelManager {
@@ -38,21 +39,29 @@ public class TunnelManager {
 		this.logger = LoggerFactory.getLogger("tunnel manager");
 	}
 	
-	public void create(TunnelConfiguration config) {
+	public TunnelReference create(TunnelConfiguration config) {
 		int port = config.getSourcePort();
 		if(blocked.contains(port) || tunnels.containsKey(port)) {
 			// throw error?
-			return;
+			return null;
 		}	
 		
+		TunnelReference reference = new TunnelReference();
+		
 		// create tunnel
-		Tunnel tunnel = new Tunnel(new NioEventLoopGroup(1), this.workerGroup, config);
+		Tunnel tunnel = new Tunnel(new NioEventLoopGroup(2), this.workerGroup, config);
 		
 		// save
 		this.tunnels.put(config.getSourcePort(), tunnel);
 		
 		// start tunnel
 		tunnel.start();
+		
+		// set up reference
+		reference.setConfigruation(tunnel.configuration());
+		reference.setStats(tunnel.stats());
+		
+		return reference;
 	}
 	
 	public void stop(int port) {
@@ -67,16 +76,19 @@ public class TunnelManager {
 		}
 	}
 	
-	public List<TunnelConfiguration> info() {
+	public List<TunnelReference> info() {
 		
 		if(this.tunnels.isEmpty()) {
 			return Collections.emptyList();
 		}
 		
-		List<TunnelConfiguration> configurations = new ArrayList<>(this.tunnels.size());
+		List<TunnelReference> configurations = new ArrayList<>(this.tunnels.size());
 		
 		for(Tunnel t : this.tunnels.values()) {
-			configurations.add(t.configuration());
+			TunnelReference reference = new TunnelReference();
+			reference.setConfigruation(t.configuration());
+			reference.setStats(t.stats());
+			configurations.add(reference);
 		}
 		
 		return configurations;

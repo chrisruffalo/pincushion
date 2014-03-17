@@ -21,7 +21,7 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.chrisruffalo.multitunnel.options.Options;
+import com.github.chrisruffalo.multitunnel.model.configuration.MultiTunnelConfiguration;
 import com.github.chrisruffalo.multitunnel.tunnel.TunnelManager;
 import com.github.chrisruffalo.multitunnel.web.rest.ManagementApplication;
 
@@ -37,9 +37,9 @@ public class ManagementServer {
 	
 	private final TunnelManager manager;
 	
-	public ManagementServer(TunnelManager manager, EventLoopGroup eventGroup, Options options) {
-		this.managementInterface = options.getManagementInterface();
-		this.managementPort = options.getManagementPort();
+	public ManagementServer(TunnelManager manager, EventLoopGroup eventGroup, MultiTunnelConfiguration config) {
+		this.managementInterface = config.getManagementInterface();
+		this.managementPort = config.getManagementPort();
 		
 		this.manager = manager;
 		

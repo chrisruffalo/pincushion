@@ -13,7 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.chrisruffalo.multitunnel.client.ClientFactory;
-import com.github.chrisruffalo.multitunnel.model.TunnelConfiguration;
+import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelConfiguration;
+import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelStatistics;
 
 public class Tunnel {
 
@@ -33,6 +34,8 @@ public class Tunnel {
 	
 	private final TunnelConfiguration configuration;
 	
+	private StatisticsCollector collector;
+	
 	public Tunnel(EventLoopGroup bossGroup, EventLoopGroup workerGroup, TunnelConfiguration configuration) {
 		this.bossGroup = bossGroup;
 		this.workerGroup = workerGroup;
@@ -49,6 +52,9 @@ public class Tunnel {
 		// create new client factory
 		final ClientFactory factory = new ClientFactory(this.workerGroup);
 		
+		// create
+		this.collector = new StatisticsCollector();
+		
 		// create server bootstrap
         ServerBootstrap b = new ServerBootstrap();
         b.group(this.bossGroup, this.workerGroup)
@@ -56,6 +62,9 @@ public class Tunnel {
          .childHandler(new ChannelInitializer<SocketChannel>() { 
 			@Override
             public void initChannel(SocketChannel ch) throws Exception {
+				// add stats collector to head of pipeline
+				ch.pipeline().addFirst("stats", collector);
+				
 				// create forwarding client bootstrapper 
 				Bootstrap bootstrap = factory.bootstrap(destinationHost, destinationPort);
 					
@@ -94,6 +103,10 @@ public class Tunnel {
 
 	public TunnelConfiguration configuration() {
 		return this.configuration;
+	}
+
+	public TunnelStatistics stats() {
+		return this.collector.collect();
 	}
 	
 }

@@ -1,7 +1,7 @@
 package com.github.chrisruffalo.multitunnel.options.tunnel;
 
 import com.beust.jcommander.IStringConverter;
-import com.github.chrisruffalo.multitunnel.model.TunnelConfiguration;
+import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelConfiguration;
 
 public class TunnelConfigurationConverter implements IStringConverter<TunnelConfiguration> {
 
