@@ -98,13 +98,6 @@
 			<version>${resteasy.version}</version>
 		</dependency>
 		
-		<!-- make up for scanning lack in jetty/resteasy -->
-		<dependency>
-		    <groupId>org.reflections</groupId>
-		    <artifactId>reflections</artifactId>
-		    <version>0.9.9-RC1</version>
-		</dependency>
-		
 		<!-- command line configuration -->
 		<dependency>
 		  <groupId>com.beust</groupId>
