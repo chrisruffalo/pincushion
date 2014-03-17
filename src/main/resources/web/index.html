@@ -37,7 +37,7 @@
 				</div>
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav navbar-right">
-						<li><a href="#">Tunnels</a></li>
+						<li><a href="#tunnels">Tunnels</a></li>
 					</ul>
 				</div>
 			</div>
@@ -47,56 +47,15 @@
 			<div class="row">
 				<div class="col-sm-3 col-md-2 sidebar">
 					<ul class="nav nav-sidebar">
-						<li class="active"><a href="#">Tunnels</a></li>
-						<li><a href="#">Proxies</a></li>
-						<li><a href="#">Modules</a></li>
+						<li class="active"><a href="#tunnels">Tunnels</a></li>
+						<li><a href="#proxies">Proxies</a></li>
+						<li><a href="#modules">Modules</a></li>
 					</ul>
 				</div>
 				
 				<!-- body content -->
-				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-					<h2 class="sub-header">Tunnels</h2>
-					
-					<div ng-controller="TunnelTableController" class="table-responsive">
-						<table class="table table-striped">
-							<thead>
-								<tr>
-									<th><!-- icon --></th>
-									<th>source port</th>
-									<th>destination</th>
-									<th>destination port</th>
-									<th>connections</th>
-									<th>traffic</th>
-									<th><!-- controls --></th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr ng-repeat="tunnel in tunnels">
-									<td><i class="fa fa-transfer"></i></td>
-									<!-- info -->
-									<td>{{tunnel.configruation.sourcePort}}</td>
-									<td>{{tunnel.configruation.destHost}}</td>
-									<td>{{tunnel.configruation.destPort}}</td>
-									<!-- connections -->
-									<td>
-										<span ng-if="tunnel.stats">{{tunnel.stats.activeConnections}} ({{tunnel.stats.totalConnections}})</span>
-									</td>
-									<!-- traffic -->
-									<td>
-										<span ng-if="tunnel.stats">
-											{{tunnel.stats.read}}
-											<i class="fa fa-arrow-up"></i>
-											{{tunnel.stats.returned}}
-											<i class="fa fa-arrow-down"></i>
-										</span>
-									<td>
-										<button ng-click="pause(tunnel.sourcePort)" class="btn btn-sm"><i class="fa fa-pause"></i></button>
-										<button ng-click="remove(tunnel.sourcePort)" class="btn btn-sm"><i class="fa fa-times"></i></button>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
+				<div ng-view class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
 				</div> <!-- /end body content -->
 			</div>  <!-- /end row -->
 		</div>
@@ -104,7 +63,10 @@
 		<!-- load third-party javascript -->
 		<script src="static/js/jquery-2.1.0.min.js"></script>
 		<script src="static/js/bootstrap.min.js"></script>
+		
+		<!-- angular and angular modules -->
 		<script src="static/js/angular.min.js"></script>
+		<script src="static/js/angular-route.min.js"></script>
 		
 		<!-- load application javascript -->
 		<script src="app/js/controllers.js"></script>

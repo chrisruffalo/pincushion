@@ -1,4 +1,20 @@
-var multiTunnelApp = angular.module('multiTunnelApp', []);
+var multiTunnelApp = angular.module('multiTunnelApp', ['ngRoute']);
+
+multiTunnelApp.config(['$routeProvider',
+    function($routeProvider) {
+        $routeProvider.
+            when('/tunnels', {
+                templateUrl: 'templates/tunnels.html',
+                controller: 'TunnelTableController'
+        }).
+            when('/modules', {
+                templateUrl: 'templates/modules.html',
+                controller: 'ModulesTableController'
+        }).
+            otherwise({
+                redirectTo: '/tunnels'
+        });
+}]);
  
 multiTunnelApp.controller('TunnelTableController', function ($scope, $http, $timeout) {
 	$scope.pause = function(port) {
@@ -63,4 +79,8 @@ multiTunnelApp.controller('TunnelTableController', function ($scope, $http, $tim
 	
 	// initial load
 	$scope.updateTable();
+});
+
+multiTunnelApp.controller('ModulesTableController', function ($scope, $http, $timeout) {
+	
 });
