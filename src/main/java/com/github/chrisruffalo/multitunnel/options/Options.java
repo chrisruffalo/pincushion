@@ -13,7 +13,7 @@ import com.github.chrisruffalo.multitunnel.options.tunnel.TunnelConfigurationCon
 public class Options {
 
 	@Parameter(names={"--tunnel", "-t"}
-			, description="Creates a tunnel using the format '<sourcePort>:<destinationHost>:<destinationPort>'.  You may have more than one tunnel but at least one is required."
+			, description="Creates a tunnel using the format '<sourceInterface>:<sourcePort>:<destinationHost>:<destinationPort>'.  A source interface is optional.  You may have more than one tunnel."
 			, converter=TunnelConfigurationConverter.class
 	)
 	private List<TunnelConfiguration> tunnels;

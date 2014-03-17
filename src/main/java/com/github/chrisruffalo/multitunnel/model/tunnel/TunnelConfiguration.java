@@ -1,12 +1,26 @@
 package com.github.chrisruffalo.multitunnel.model.tunnel;
 
 public class TunnelConfiguration {
-
+	
+	private String sourceInterface;
+	
 	private int sourcePort;
 	
 	private String destHost;
 	
 	private int destPort;
+
+	public TunnelConfiguration() {
+		this.sourceInterface = "0.0.0.0";
+	}
+	
+	public String getSourceInterface() {
+		return sourceInterface;
+	}
+
+	public void setSourceInterface(String sourceInterface) {
+		this.sourceInterface = sourceInterface;
+	}
 
 	public int getSourcePort() {
 		return sourcePort;

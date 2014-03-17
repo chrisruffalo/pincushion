@@ -22,7 +22,9 @@ public class Tunnel {
 	
 	private final EventLoopGroup workerGroup;
 	
-	private final int port;
+	private final String sourceInterface;
+	
+	private final int sourcePort;
 
 	private final String destinationHost;
 	
@@ -39,13 +41,14 @@ public class Tunnel {
 	public Tunnel(EventLoopGroup bossGroup, EventLoopGroup workerGroup, TunnelConfiguration configuration) {
 		this.bossGroup = bossGroup;
 		this.workerGroup = workerGroup;
-		this.port = configuration.getSourcePort();
+		this.sourceInterface = configuration.getSourceInterface();
+		this.sourcePort = configuration.getSourcePort();
 		this.destinationHost = configuration.getDestHost();
 		this.destinationPort = configuration.getDestPort();
 		
 		this.configuration = configuration;
 		
-		this.logger = LoggerFactory.getLogger("tunnel [" + port + "] => [" + destinationHost + ":" + destinationPort + "]");
+		this.logger = LoggerFactory.getLogger("tunnel [" + this.sourceInterface + ":" + this.sourcePort + "] => [" + this.destinationHost + ":" + this.destinationPort + "]");
 	}
 	
 	public void start() {
@@ -83,7 +86,7 @@ public class Tunnel {
          ;
 
 		try {
-			this.channelFuture = b.bind(this.port).sync();
+			this.channelFuture = b.bind(this.sourceInterface, this.sourcePort).sync();
 
 			this.logger.info("started");
 		} catch (InterruptedException e) {
