@@ -19,7 +19,7 @@ public class MultiTunnelConfiguration {
 	public MultiTunnelConfiguration() {
 		// default options
 		this.managementInterface = "0.0.0.0";
-		this.managementPort = 4041;
+		this.managementPort = 8095;
 
 		// workers/threads
 		this.workers = Runtime.getRuntime().availableProcessors() / 2;
