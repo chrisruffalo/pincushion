@@ -6,9 +6,11 @@ import io.netty.util.ResourceLeakDetector;
 import io.netty.util.ResourceLeakDetector.Level;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,6 +46,9 @@ public class Main {
 			return;
 		}
 		
+		// start logging
+		Logger logger = LoggerFactory.getLogger("main");
+		
 		// do example print out
 		if(options.isCreateExample()) {
 			File example = new File("./multi-tunnel.configuration.example");
@@ -65,10 +70,10 @@ public class Main {
 				
 				output.flush();
 			} catch (FileNotFoundException e) {
-				System.out.println("Could not create example file: " + e.getMessage());
+				logger.error("Could not create example file: " + e.getMessage(), e);
 				return;
 			} catch (IOException e) {
-				System.out.println("Error while creating example file: " + e.getMessage());
+				logger.error("Error while creating example file: " + e.getMessage(), e);
 				return;
 			} 
 			
@@ -76,15 +81,28 @@ public class Main {
 			return;
 		}
 		
+		// look for configuration file
+		File configFile = options.getConfigurationFile();
+		InputStream input = null;
+		if(configFile.exists() && configFile.isFile()) {
+			try {
+				input = new FileInputStream(configFile);
+				logger.info("Using configuration file: {}", configFile.getAbsolutePath());
+			} catch (FileNotFoundException e) {
+				input = Thread.currentThread().getContextClassLoader().getResourceAsStream("default.multi-tunnel.configuration");
+				logger.error("Could not load configuration file, using defaults");
+			}
+		} else {
+			input = Thread.currentThread().getContextClassLoader().getResourceAsStream("default.multi-tunnel.configuration");
+			logger.info("Using default configuration file");
+		}
+		
 		// load multi-tunnel configuration file (if available) or load defaults from
 		// classpath
-		MultiTunnelConfiguration config = new MultiTunnelConfiguration();
+		MultiTunnelConfiguration config = MultiTunnelConfiguration.read(input, logger);
 		
 		// set netty stuff and various environment things
 		ResourceLeakDetector.setLevel(Level.DISABLED);		
-		
-		// start logging
-		Logger logger = LoggerFactory.getLogger("main");
 		
 		// otherwise execute
 		List<TunnelConfiguration> configurations = options.getTunnels();

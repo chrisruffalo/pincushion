@@ -1,6 +1,6 @@
 {
   "basePath" : ".",
-  "managementPort" : 4041,
+  "managementPort" : 8095,
   "managementInterface" : "0.0.0.0",
-  "workers" : 16
+  "workers" : 4
 }

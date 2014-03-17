@@ -1,9 +1,11 @@
 package com.github.chrisruffalo.multitunnel.model.configuration;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
 
 
 public class MultiTunnelConfiguration {
@@ -77,4 +79,20 @@ public class MultiTunnelConfiguration {
 			}
 		}
 	}	
+	
+	public static MultiTunnelConfiguration read(InputStream stream, Logger logger) {
+		
+		ObjectMapper instance = new ObjectMapper();
+		
+		MultiTunnelConfiguration configuration;
+		try {
+			configuration = instance.readValue(stream, MultiTunnelConfiguration.class);
+			logger.info("Loaded configuration");
+		} catch (IOException e) {
+			configuration = new MultiTunnelConfiguration();
+			logger.error("Error reading configuration, falling back to defaults: " + e.getMessage(), e);
+		}
+		
+		return configuration;
+	}
 }
