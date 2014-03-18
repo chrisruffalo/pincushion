@@ -1,17 +1,40 @@
 <h2 class="sub-header">Add/Edit Tunnel</h2>
 
-
-<div>
-  <form novalidate class="simple-form">
-  	Name: <input type="text" ng-model="tunnel.name" /><br />
-    Bind Interface: <input type="text" ng-model="tunnel.sourceInterface" /><br />
-    Source Port: <input type="text" ng-model="tunnel.sourcePort" /><br />
-    Destination Host: <input type="text" ng-model="tunnel.destHost" /><br />
-    Destination Port: <input type="text" ng-model="tunnel.destPort" /><br />
-
-    <button ng-click="reset()">RESET</button>
-    <button ng-click="save(tunnel)">SAVE</button>
-  </form>
-  <pre>form = {{tunnel | json}}</pre>
-  <pre>master = {{master | json}}</pre>
-</div>
+<form novalidate class="form-horizontal" role="form">
+  <div class="form-group">
+    <label for="inputTunnelName" class="col-sm-2 control-label">Tunnel Name</label>
+    <div class="col-sm-4">
+      <input type="text" class="form-control" id="inputTunnelName" ng-model="tunnel.name" placeholder="">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputTunnelSourceInterface" class="col-sm-2 control-label">Source Interface</label>
+    <div class="col-sm-4">
+      <input type="text" class="form-control" id="inputTunnelSourceInterface" ng-model="tunnel.sourceInterface" placeholder="0.0.0.0">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputTunnelSourcePort" class="col-sm-2 control-label">Source Port</label>
+    <div class="col-sm-2">
+      <input type="text" class="form-control" id="inputTunnelSourcePort" ng-model="tunnel.sourcePort" placeholder="">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputTunnelDestinationHost" class="col-sm-2 control-label">Destination Host</label>
+    <div class="col-sm-4">
+      <input type="text" class="form-control" id="inputTunnelDestinationHost" ng-model="tunnel.destHost" placeholder="">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputTunnelDestinationPort" class="col-sm-2 control-label">Destination Port</label>
+    <div class="col-sm-2">
+      <input type="text" class="form-control" id="inputTunnelDestinationPort" ng-model="tunnel.destPort" placeholder="">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" ng-click="reset()" class="btn btn-default">reset</button>
+      <button type="submit" ng-click="save(tunnel)" class="btn btn-primary">save</button>
+    </div>
+  </div>
+</form>
