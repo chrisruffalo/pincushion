@@ -1,4 +1,4 @@
-multiTunnelApp.controller('TunnelTableController', function ($scope, $resource, $timeout, Tunnel) {
+multiTunnelApp.controller('TunnelTableController', function ($scope, $resource, $timeout, $location, Tunnel) {
 	// data
 	$scope.tunnels = [];
 	
@@ -17,13 +17,56 @@ multiTunnelApp.controller('TunnelTableController', function ($scope, $resource, 
 		$scope.pauseRefresh();
 	});
 	
+	$scope.edit = function(id) {
+		// pause update
+		$scope.pauseRefresh();
+		
+		// change location
+		$location.path('edit-tunnel/' + id);
+	}
+	
+	$scope.remove = function(tunnel) {
+		if(!tunnel.$remove) {
+			tunnel = new Tunnel(tunnel);
+		}
+		
+		// pause update
+		$scope.pauseRefresh();
+		
+		// update table after remove 
+		tunnel.$remove($scope.updateTable);
+	}
+
+	$scope.pause = function(tunnel) {
+		if(!tunnel.$pause) {
+			tunnel = new Tunnel(tunnel);
+		}
+		
+		// pause update
+		$scope.pauseRefresh();
+		
+		// update table after remove 
+		tunnel.$pause($scope.updateTable);
+	}
+	
+	$scope.resume = function(tunnel) {
+		if(!tunnel.$resume) {
+			tunnel = new Tunnel(tunnel);
+		}
+		
+		// pause update
+		$scope.pauseRefresh();
+		
+		// update table after remove 
+		tunnel.$resume($scope.updateTable);
+	}
+	
 	// pause refreshing
 	$scope.pauseRefresh = function() {
-		// cancel previous timer if it exists
+		// cancel (and nullify) previous timer if it exists
 		if($scope.updateTimer) {
-			if($scope.updateTimer.cancel) {
-				$scope.updateTimer.cancel();
-			}
+			$timeout.cancel($scope.updateTimer);
+			$scope.updateTimer = null;
 		}
 	}
 	

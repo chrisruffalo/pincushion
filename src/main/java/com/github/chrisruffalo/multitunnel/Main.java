@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import com.github.chrisruffalo.multitunnel.model.configuration.MultiTunnelConfig
 import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelConfiguration;
 import com.github.chrisruffalo.multitunnel.options.Options;
 import com.github.chrisruffalo.multitunnel.tunnel.TunnelManager;
+import com.github.chrisruffalo.multitunnel.util.InterfaceHelper;
 import com.github.chrisruffalo.multitunnel.util.MultiTunnelProperties;
 import com.github.chrisruffalo.multitunnel.web.ManagementServer;
 
@@ -117,15 +119,37 @@ public class Main {
 		
 		// create tunnel manager
 		TunnelManager manager = new TunnelManager(eventGroup);
+
+		// init interface helper since it can be slow
+		InterfaceHelper.INSTANCE.init();
 		
 		// only start if some instances exist
 		if(configurations != null && !configurations.isEmpty()) {
+			// filter null items
+			Iterator<TunnelConfiguration> filter = configurations.iterator();
+			while(filter.hasNext()) {
+				TunnelConfiguration item = filter.next();
+				if(item == null) {
+					filter.remove();
+				}
+			}
+						
 			// start servers
 			logger.info("Starting ({}) pre-configured tunnels...", configurations.size());
-			for(TunnelConfiguration configuratoin : configurations) {
-				manager.create(configuratoin);
+			for(TunnelConfiguration configuration : configurations) {
+				// generate name for "auto" created tunnel
+				String name = String.format("auto-%s:%d->%s:%d", 
+												configuration.getSourceInterface(), 
+												configuration.getSourcePort(), 
+												configuration.getDestHost(), 
+												configuration.getDestPort()
+											);
+				configuration.setName(name);
+				
+				manager.create(configuration);
 			}
 		} else {
+			// empty configuration list
 			configurations = new LinkedList<>();
 		}
 		

@@ -1,40 +1,57 @@
 <h2 class="sub-header">Add/Edit Tunnel</h2>
 
+
+<p/>
+
 <form novalidate class="form-horizontal" role="form">
   <div class="form-group">
     <label for="inputTunnelName" class="col-sm-2 control-label">Tunnel Name</label>
     <div class="col-sm-4">
-      <input type="text" class="form-control" id="inputTunnelName" ng-model="tunnel.name" placeholder="">
+      <input type="text" class="form-control" id="inputTunnelName" ng-model="bootstrap.configuration.name" placeholder="">
     </div>
   </div>
   <div class="form-group">
     <label for="inputTunnelSourceInterface" class="col-sm-2 control-label">Source Interface</label>
-    <div class="col-sm-4">
-      <input type="text" class="form-control" id="inputTunnelSourceInterface" ng-model="tunnel.sourceInterface" placeholder="0.0.0.0">
-    </div>
-  </div>
+	<div class="col-sm-10">
+		<div ng-repeat="(id,category) in bootstrap.validInterfaces">
+			<!-- individual category -->
+			<p>{{id}}</p>
+		    
+		    <p ng-repeat="interface in category">
+		    	<label><input type="radio" ng-model="bootstrap.configuration.sourceInterface" value="{{interface}}">{{interface}}</label>
+		    </p>
+	    </div>
+        <p>
+	    	<input type="radio" ng-model="bootstrap.configuration.sourceInterface" value="!!OTHER"><input type="text" class="form-control" id="inputTunnelSourcePortOther" placeholder="Other">
+	    </p>
+	</div>
+  </div>  
   <div class="form-group">
     <label for="inputTunnelSourcePort" class="col-sm-2 control-label">Source Port</label>
     <div class="col-sm-2">
-      <input type="text" class="form-control" id="inputTunnelSourcePort" ng-model="tunnel.sourcePort" placeholder="">
+      <input type="text" class="form-control" id="inputTunnelSourcePort" ng-model="bootstrap.configuration.sourcePort" placeholder="">
     </div>
   </div>
   <div class="form-group">
     <label for="inputTunnelDestinationHost" class="col-sm-2 control-label">Destination Host</label>
     <div class="col-sm-4">
-      <input type="text" class="form-control" id="inputTunnelDestinationHost" ng-model="tunnel.destHost" placeholder="">
+      <input type="text" class="form-control" id="inputTunnelDestinationHost" ng-model="bootstrap.configuration.destHost" placeholder="">
     </div>
   </div>
   <div class="form-group">
     <label for="inputTunnelDestinationPort" class="col-sm-2 control-label">Destination Port</label>
     <div class="col-sm-2">
-      <input type="text" class="form-control" id="inputTunnelDestinationPort" ng-model="tunnel.destPort" placeholder="">
+      <input type="text" class="form-control" id="inputTunnelDestinationPort" ng-model="bootstrap.configuration.destPort" placeholder="">
     </div>
   </div>
   <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
+    <div class="col-sm-offset-2 col-sm-2">
       <button type="submit" ng-click="reset()" class="btn btn-default">reset</button>
-      <button type="submit" ng-click="save(tunnel)" class="btn btn-primary">save</button>
+      <button type="submit" ng-click="save(bootstrap.configuration)" class="btn btn-primary">save</button>
+    </div>
+    <div class="col-sm-offset-1 col-sm-1">
+      <!-- do nothing and return -->
+      <button ng-click="cancel()" class="btn btn-default">cancel</button>
     </div>
   </div>
 </form>

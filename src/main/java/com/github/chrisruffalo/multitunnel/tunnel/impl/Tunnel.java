@@ -21,6 +21,7 @@ import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelStatistics;
 import com.github.chrisruffalo.multitunnel.tunnel.impl.control.PauseController;
 import com.github.chrisruffalo.multitunnel.tunnel.impl.control.StatisticsCollector;
 import com.github.chrisruffalo.multitunnel.tunnel.impl.forward.RequestForwarder;
+import com.github.chrisruffalo.multitunnel.util.InterfaceHelper;
 
 public class Tunnel {
 
@@ -31,6 +32,8 @@ public class Tunnel {
 	private final EventLoopGroup workerGroup;
 	
 	private final String sourceInterface;
+	
+	private final String bindInterface;
 	
 	private final int sourcePort;
 
@@ -56,13 +59,20 @@ public class Tunnel {
 		this.bossGroup = bossGroup;
 		this.workerGroup = workerGroup;
 		this.sourceInterface = configuration.getSourceInterface();
+		this.bindInterface = InterfaceHelper.INSTANCE.sanitize(this.sourceInterface);
 		this.sourcePort = configuration.getSourcePort();
 		this.destinationHost = configuration.getDestHost();
 		this.destinationPort = configuration.getDestPort();
 		
 		this.configuration = configuration;
 		
-		this.logger = LoggerFactory.getLogger("tunnel [" + this.sourceInterface + ":" + this.sourcePort + "] => [" + this.destinationHost + ":" + this.destinationPort + "]");
+		// create visual representation of binding
+		String source = this.sourceInterface;
+		if(!source.equals(this.bindInterface)) {
+			source += " (" + this.bindInterface + ")";
+		}
+		
+		this.logger = LoggerFactory.getLogger("tunnel [" + source + ":" + this.sourcePort + "] => [" + this.destinationHost + ":" + this.destinationPort + "]");
 	}
 	
 	public void start() {
@@ -104,7 +114,8 @@ public class Tunnel {
          ;
 
 		try {
-			this.channelFuture = b.bind(this.sourceInterface, this.sourcePort).sync();
+			// bind
+			this.channelFuture = b.bind(this.bindInterface, this.sourcePort).sync();
 
 			this.logger.info("started");
 			

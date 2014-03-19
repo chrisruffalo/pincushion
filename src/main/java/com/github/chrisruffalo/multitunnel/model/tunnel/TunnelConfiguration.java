@@ -6,20 +6,17 @@ public class TunnelConfiguration {
 	
 	private String sourceInterface;
 	
-	private int sourcePort;
+	private Integer sourcePort;
 	
 	private String destHost;
 	
-	private int destPort;
+	private Integer destPort;
 
 	public TunnelConfiguration() {
 		this.sourceInterface = "0.0.0.0";
 	}
 	
 	public String getName() {
-		if(name == null || name.isEmpty()) {
-			return String.format("auto-%s:%d->%s:%d", this.sourceInterface, this.sourcePort, this.destHost, this.destPort);
-		}
 		return name;
 	}
 
@@ -35,11 +32,11 @@ public class TunnelConfiguration {
 		this.sourceInterface = sourceInterface;
 	}
 
-	public int getSourcePort() {
+	public Integer getSourcePort() {
 		return sourcePort;
 	}
 
-	public void setSourcePort(int sourcePort) {
+	public void setSourcePort(Integer sourcePort) {
 		this.sourcePort = sourcePort;
 	}
 
@@ -51,11 +48,11 @@ public class TunnelConfiguration {
 		this.destHost = destHost;
 	}
 
-	public int getDestPort() {
+	public Integer getDestPort() {
 		return destPort;
 	}
 
-	public void setDestPort(int destPort) {
+	public void setDestPort(Integer destPort) {
 		this.destPort = destPort;
 	}
 	
