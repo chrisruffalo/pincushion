@@ -79,8 +79,6 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
 		update($scope.bloodhounds.hosts, interfaces.Hostname);
 		update($scope.bloodhounds.ipv4, interfaces.IPV4);
 		update($scope.bloodhounds.ipv6, interfaces.IPV6);
-		
-		console.dir($scope.bloodhounds);
 	};
 	
     // load form
