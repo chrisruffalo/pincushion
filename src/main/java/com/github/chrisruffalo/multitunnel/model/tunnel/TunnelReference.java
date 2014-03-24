@@ -2,9 +2,18 @@ package com.github.chrisruffalo.multitunnel.model.tunnel;
 
 import com.github.chrisruffalo.multitunnel.tunnel.impl.TunnelStatus;
 
+/**
+ * A view object used to represent the values in the 
+ * actual, saved, tunnel object.
+ * 
+ * @author cruffalo
+ *
+ */
 public class TunnelReference {
 
 	private String id;
+	
+	private String bind;
 	
 	private TunnelConfiguration configruation;
 	
@@ -18,6 +27,14 @@ public class TunnelReference {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	public String getBind() {
+		return this.bind;
+	}
+	
+	public void setBind(String bind) {
+		this.bind = bind;
 	}
 
 	public TunnelConfiguration getConfigruation() {

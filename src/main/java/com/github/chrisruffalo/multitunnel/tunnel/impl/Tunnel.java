@@ -192,6 +192,7 @@ public class Tunnel {
 		TunnelReference ref = new TunnelReference();
 		
 		ref.setId(this.id);
+		ref.setBind(this.prettyBind());
 		ref.setStats(this.collector.collect());
 		ref.setStatus(this.status);
 		ref.setConfigruation(this.configuration);

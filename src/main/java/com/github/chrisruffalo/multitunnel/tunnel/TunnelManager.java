@@ -83,8 +83,8 @@ public class TunnelManager {
 		boolean available = PortHelper.INSTANCE.available(goodIface, port);
 		if(!available) {
 			// create message
-			String message = String.format("configuration with name '%s' is attempting to use port '%d' on interface '%s' which is already in use", config.getName(), port, goodIface);
-
+			String message = String.format("configuration with name '%s' is attempting to use port '%d' on interface '%s' which is already in use or you do not have permissions to use.  Check ports that are in use and your permissions and try again.", config.getName(), port, goodIface);
+					
 			// log error
 			this.logger.error(message);
 			

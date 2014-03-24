@@ -154,7 +154,7 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
     	}
     	
     	// set tunnel form error text
-    	$('#tunnelFormError').html('<strong>Oh no!</strong>&nbsp;' + message);
+    	$('#tunnelFormError').html('<h4>Oh no!</h4>' + message + '</p>');
     	
     	// show the error alert
     	$('#tunnelFormError').show();
