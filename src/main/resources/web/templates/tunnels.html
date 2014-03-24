@@ -36,7 +36,12 @@
 				<tbody>
 					<tr ng-repeat="tunnel in tunnels">
 						<!-- general tunnel status -->
-						<td>{{tunnel.status}}</td>
+						<td>
+							<i class="fa fa-check" ng-if="'RUNNING' == tunnel.status"></i>
+							<i class="fa fa-pause" ng-if="'PAUSED' == tunnel.status"></i>
+							<i class="fa fa-stop" ng-if="'STOPPED' == tunnel.status"></i>
+							<i class="fa fa-exclamation" ng-if="'ERROR' == tunnel.status"></i>
+						</td>
 						<!-- info -->
 						<td>{{tunnel.configruation.name}}</td>
 						<td>{{tunnel.bind}}</td>
