@@ -1,8 +1,6 @@
 package com.github.chrisruffalo.multitunnel.web.rest.services;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -19,7 +17,6 @@ import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelBootstrap;
 import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelConfiguration;
 import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelReference;
 import com.github.chrisruffalo.multitunnel.tunnel.TunnelManager;
-import com.github.chrisruffalo.multitunnel.util.InterfaceHelper;
 
 @Path("/tunnel")
 @Produces(MediaType.APPLICATION_JSON)
@@ -36,18 +33,6 @@ public class TunnelManagementService {
 	@GET
 	public List<TunnelReference> info() {
 		return this.manager.info();
-	}
-	
-	@Path("/blocked") 
-	@GET
-	public Set<Integer> getBlockedPorts() {
-		return this.manager.blocked();
-	}
-	
-	@Path("/interfaces")
-	@GET
-	public Map<String, Set<String>> getValidInterfaces() {
-		return InterfaceHelper.INSTANCE.validInterfaces();
 	}
 	
 	@Path("/bootstrap")

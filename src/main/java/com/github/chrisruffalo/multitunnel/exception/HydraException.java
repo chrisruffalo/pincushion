@@ -20,7 +20,7 @@ public class HydraException extends NoLogWebApplicationException {
 	private static final long serialVersionUID = 1L;
 
 	public HydraException(Throwable cause, String message) {
-		super(cause, Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build());
+		super(cause, Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HydraErrorWrapper(message)).build());
 	}
 	
 	public HydraException(String message) {

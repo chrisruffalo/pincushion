@@ -1,57 +1,69 @@
-<h2 class="sub-header">Tunnels</h2>
-
-<!-- button to add tunnel -->
-<a href="#add-tunnel" class="btn btn-primary btn-md pull-right"><i class="fa fa-plus"></i> add new tunnel</a>
-<p/>
-
-<!-- table of items -->
-<div class="table-responsive">
-	<div ng-if="!tunnels || tunnels.length < 1">
-		<!-- content for when there are no tunnels -->
+<!-- where the header goes -->
+<div class="row">
+	<div class="col-sm-offset-1 col-sm-10">
+		<h2 class="sub-header">Tunnels</h2>
 	</div>
-	<table ng-if="tunnels && tunnels.length >= 1" class="table table-striped">
-		<thead>
-			<tr>
-				<th><!-- icon/status --></th>
-				<th>name</th>
-				<th>source interface</th>
-				<th>source port</th>
-				<th>destination</th>
-				<th>destination port</th>
-				<th>connections</th>
-				<th>traffic</th>
-				<th><!-- controls --></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="tunnel in tunnels">
-				<!-- general tunnel status -->
-				<td>{{tunnel.status}}</td>
-				<!-- info -->
-				<td>{{tunnel.configruation.name}}</td>
-				<td>{{tunnel.configruation.sourceInterface}}</td>
-				<td>{{tunnel.configruation.sourcePort}}</td>
-				<td>{{tunnel.configruation.destHost}}</td>
-				<td>{{tunnel.configruation.destPort}}</td>
-				<!-- connections -->
-				<td>
-					<span ng-if="tunnel.stats">{{tunnel.stats.activeConnections}} ({{tunnel.stats.totalConnections}})</span>
-				</td>
-				<!-- traffic -->
-				<td>
-					<span ng-if="tunnel.stats">
-						{{tunnel.stats.read | bytesFormatter}}
-						<i class="fa fa-arrow-up"></i>
-						{{tunnel.stats.returned | bytesFormatter}}
-						<i class="fa fa-arrow-down"></i>
-					</span>
-				<td>
-					<button ng-click="edit(tunnel.id)" class="btn btn-sm btn-default"><i class="fa fa-pencil"></i></button>
-					<button ng-if="tunnel.status == 'PAUSED'" ng-click="resume(tunnel)" class="btn btn-sm btn-default"><i class="fa fa-play"></i></button>
-					<button ng-if="tunnel.status == 'RUNNING'" ng-click="pause(tunnel)" class="btn btn-sm btn-default"><i class="fa fa-pause"></i></button>
-					<button ng-click="remove(tunnel)" class="btn btn-sm btn-default"><i class="fa fa-times"></i></button>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+</div>
+
+<div class="row">
+	<div class="col-sm-offset-1 col-sm-10">
+		<!-- button to add tunnel -->
+		<a href="#add-tunnel" class="btn btn-primary btn-md pull-right"><i class="fa fa-plus"></i> add new tunnel</a>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm-offset-1 col-sm-10">
+		<!-- table of items -->
+		<div class="table-responsive">
+			<div ng-if="!tunnels || tunnels.length < 1">
+				<!-- content for when there are no tunnels -->
+			</div>
+			<table ng-if="tunnels && tunnels.length >= 1" class="table table-striped">
+				<thead>
+					<tr>
+						<th><!-- icon/status --></th>
+						<th>name</th>
+						<th>source interface</th>
+						<th>source port</th>
+						<th>destination</th>
+						<th>destination port</th>
+						<th>connections</th>
+						<th>traffic</th>
+						<th><!-- controls --></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="tunnel in tunnels">
+						<!-- general tunnel status -->
+						<td>{{tunnel.status}}</td>
+						<!-- info -->
+						<td>{{tunnel.configruation.name}}</td>
+						<td>{{tunnel.prettyBind}}</td>
+						<td>{{tunnel.configruation.sourcePort}}</td>
+						<td>{{tunnel.configruation.destHost}}</td>
+						<td>{{tunnel.configruation.destPort}}</td>
+						<!-- connections -->
+						<td>
+							<span ng-if="tunnel.stats">{{tunnel.stats.activeConnections}} ({{tunnel.stats.totalConnections}})</span>
+						</td>
+						<!-- traffic -->
+						<td>
+							<span ng-if="tunnel.stats">
+								{{tunnel.stats.read | bytesFormatter}}
+								<i class="fa fa-arrow-up"></i>
+								{{tunnel.stats.returned | bytesFormatter}}
+								<i class="fa fa-arrow-down"></i>
+							</span>
+						<td>
+							<button ng-click="edit(tunnel.id)" class="btn btn-sm btn-default"><i class="fa fa-pencil"></i></button>
+							<button ng-if="tunnel.status == 'PAUSED'" ng-click="resume(tunnel)" class="btn btn-sm btn-default"><i class="fa fa-play"></i></button>
+							<button ng-if="tunnel.status == 'RUNNING'" ng-click="pause(tunnel)" class="btn btn-sm btn-default"><i class="fa fa-pause"></i></button>
+							<button ng-click="remove(tunnel)" class="btn btn-sm btn-default"><i class="fa fa-times"></i></button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
 </div>

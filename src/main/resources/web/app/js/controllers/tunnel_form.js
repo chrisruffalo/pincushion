@@ -143,24 +143,44 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
     	}
     });
     
+    // what to do when an http error is returned
+    $scope.onError = function(errorHttpResponse) {
+    
+    	// get and normalize response
+    	var response = errorHttpResponse.data;
+    	var message = "An error occured while submitting the form, check your values and submit again.";
+    	if(response && response.message && response.message != "") {
+    		message = response.message;    		
+    	}
+    	
+    	// set tunnel form error text
+    	$('#tunnelFormError').html('<strong>Oh no!</strong>&nbsp;' + message);
+    	
+    	// show the error alert
+    	$('#tunnelFormError').show();
+    }
+    
     // save
     $scope.save = function(configuration) {
-    	// make sure it has it's tunnel ref
+    	// make sure it has its tunnel ref
     	if(!configuration.$start || !configuration.$update) {
     		configuration = new Tunnel(configuration);
     	}
     	
-    	// do functions
+    	// do save functions
     	if(!$scope.id) {
     		configuration.$start(function(){
 	    		$scope.returnToTunnels();
-	    	});
+	    	}, $scope.onError);
     	} else {
     		configuration.$update({tunnelId: $scope.id}, function(){
     			$scope.returnToTunnels();
-	    	});
+	    	}, $scope.onError);
     	}
     };
+    
+    // make sure error is hidden
+    $('#tunnelFormError').hide();
     
 	// do load
 	$scope.load($routeParams.id);

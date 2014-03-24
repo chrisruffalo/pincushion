@@ -7,8 +7,6 @@ public class TunnelBootstrap {
 
 	private TunnelConfiguration configuration;
 	
-	private Set<Integer> blockedPorts;
-	
 	private Map<String,Set<String>> validInterfaces;
 
 	public TunnelBootstrap() {
@@ -21,14 +19,6 @@ public class TunnelBootstrap {
 
 	public void setConfiguration(TunnelConfiguration configuration) {
 		this.configuration = configuration;
-	}
-
-	public Set<Integer> getBlockedPorts() {
-		return blockedPorts;
-	}
-
-	public void setBlockedPorts(Set<Integer> blockedPorts) {
-		this.blockedPorts = blockedPorts;
 	}
 
 	public Map<String,Set<String>> getValidInterfaces() {

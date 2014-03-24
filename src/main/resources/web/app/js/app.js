@@ -1,5 +1,7 @@
+// define the application
 var multiTunnelApp = angular.module('multiTunnelApp', ['ngResource','ngRoute','siyfion.sfTypeahead']);
 
+// global routes for the application
 multiTunnelApp.config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
@@ -24,6 +26,7 @@ multiTunnelApp.config(['$routeProvider',
         });
 }]);
 
+// resource (REST Service) for use in other parts of the application
 multiTunnelApp.factory("Tunnel", function ($resource) {
     return $resource('services/tunnel/info', [],
     		{ 
@@ -46,6 +49,8 @@ multiTunnelApp.factory("Tunnel", function ($resource) {
     );    
 });
 
+// calls utility function for converting a byte value into
+// a "pretty" byte value
 multiTunnelApp.filter('bytesFormatter', function() {
    return function(bytes) {
 	   return style.prettyBytes(bytes);

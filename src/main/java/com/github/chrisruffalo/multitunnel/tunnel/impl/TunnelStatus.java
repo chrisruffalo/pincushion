@@ -4,6 +4,7 @@ public enum TunnelStatus {
 
 	RUNNING,
 	PAUSED,
-	STOPPED
+	STOPPED, 
+	ERROR
 	;
 }

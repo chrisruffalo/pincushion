@@ -35,6 +35,8 @@ public class Tunnel {
 	
 	private final String bindInterface;
 	
+	private final String prettyBind;
+	
 	private final int sourcePort;
 
 	private final String destinationHost;
@@ -70,12 +72,15 @@ public class Tunnel {
 		String source = this.sourceInterface;
 		if(!source.equals(this.bindInterface)) {
 			source += " (" + this.bindInterface + ")";
+			this.prettyBind = source;
+		} else {
+			this.prettyBind = null;
 		}
 		
 		this.logger = LoggerFactory.getLogger("tunnel [" + source + ":" + this.sourcePort + "] => [" + this.destinationHost + ":" + this.destinationPort + "]");
 	}
 	
-	public void start() {
+	public boolean start() {
 		// create new client factory
 		final ClientFactory factory = new ClientFactory(this.workerGroup);
 		
@@ -121,9 +126,16 @@ public class Tunnel {
 			
 			// set status
 			this.status = TunnelStatus.RUNNING;
+			
+			// add to manager
+			return true;
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			this.logger.error("Error while starting tunnel: {}", e.getMessage(), e);
+			this.status = TunnelStatus.ERROR;
 		}
+		
+		// could not start
+		return false;
 	}
 
 	public void pause() {
@@ -149,6 +161,17 @@ public class Tunnel {
 		this.status = TunnelStatus.STOPPED;
 	}
 
+	public String bind() {
+		return this.bindInterface;
+	}
+	
+	public String prettyBind() {
+		if(this.prettyBind != null && !this.prettyBind.isEmpty()) {
+			return this.prettyBind;
+		}
+		return this.bindInterface;
+	}
+	
 	public TunnelConfiguration configuration() {
 		return this.configuration;
 	}
