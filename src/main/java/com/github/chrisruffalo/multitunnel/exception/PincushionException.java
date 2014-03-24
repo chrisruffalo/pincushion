@@ -12,18 +12,18 @@ import org.jboss.resteasy.spi.NoLogWebApplicationException;
  * @author cruffalo
  *
  */
-public class HydraException extends NoLogWebApplicationException {
+public class PincushionException extends NoLogWebApplicationException {
 
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public HydraException(Throwable cause, String message) {
-		super(cause, Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HydraErrorWrapper(message)).build());
+	public PincushionException(Throwable cause, String message) {
+		super(cause, Response.status(Status.INTERNAL_SERVER_ERROR).entity(new PincushionErrorWrapper(message)).build());
 	}
 	
-	public HydraException(String message) {
+	public PincushionException(String message) {
 		this(new RuntimeException(message), message);
 	}
 	

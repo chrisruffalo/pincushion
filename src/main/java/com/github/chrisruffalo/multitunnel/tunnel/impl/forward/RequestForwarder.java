@@ -29,7 +29,7 @@ public class RequestForwarder extends ChannelForwarder {
 		if(target != null) {
 			return;
 		}
-
+		
 		// save origin channel
 		final Channel origin = ctx.channel();
 		

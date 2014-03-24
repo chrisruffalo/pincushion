@@ -12,7 +12,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.chrisruffalo.multitunnel.exception.HydraException;
+import com.github.chrisruffalo.multitunnel.exception.PincushionException;
 import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelBootstrap;
 import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelConfiguration;
 import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelReference;
@@ -26,11 +26,14 @@ public class TunnelManager {
 
 	private final EventLoopGroup workerGroup;
 	
+	private final TunnelFileManager fileManager;
+	
 	private final Logger logger;
 	
-	public TunnelManager(EventLoopGroup workerGroup, Integer... blockedPorts) {
+	public TunnelManager(TunnelFileManager fileManager, EventLoopGroup workerGroup) {
 		this.tunnels = new HashMap<>();
 		this.workerGroup = workerGroup;
+		this.fileManager = fileManager;
 		
 		this.logger = LoggerFactory.getLogger("tunnel manager");
 	}
@@ -43,7 +46,7 @@ public class TunnelManager {
 			this.logger.error(message);
 			
 			// throw error?
-			throw new HydraException(message);
+			throw new PincushionException(message);
 		}
 		
 		// make sure we have a source port
@@ -54,7 +57,7 @@ public class TunnelManager {
 			this.logger.error(message);
 			
 			// throw error
-			throw new HydraException(message);
+			throw new PincushionException(message);
 		}
 		
 		// make sure the interface is something sane
@@ -78,7 +81,7 @@ public class TunnelManager {
 			this.logger.error(message);
 			
 			// throw error
-			throw new HydraException(message);
+			throw new PincushionException(message);
 		}
 		boolean available = PortHelper.INSTANCE.available(goodIface, port);
 		if(!available) {
@@ -89,7 +92,7 @@ public class TunnelManager {
 			this.logger.error(message);
 			
 			// throw error
-			throw new HydraException(message);
+			throw new PincushionException(message);
 		}
 			
 		// destination host
@@ -101,7 +104,7 @@ public class TunnelManager {
 			this.logger.error(message);
 			
 			// throw error
-			throw new HydraException(message);
+			throw new PincushionException(message);
 		}
 		
 		// destination port
@@ -113,7 +116,7 @@ public class TunnelManager {
 			this.logger.error(message);
 			
 			// throw error
-			throw new HydraException(message);
+			throw new PincushionException(message);
 		}
 		
 		// create tunnel
@@ -124,14 +127,14 @@ public class TunnelManager {
 		
 		// save result in list and return reference
 		if(result) {
-			// save
+			// save in memory
 			this.tunnels.put(tunnel.id(), tunnel);
-		
-			TunnelReference reference = new TunnelReference();
 			
-			// set up reference
-			reference.setConfigruation(tunnel.configuration());
-			reference.setStats(tunnel.stats());
+			// write to file
+			this.fileManager.saveTunnel(tunnel.configuration());
+		
+			// return ref
+			TunnelReference reference = tunnel.ref();
 			
 			return reference;
 		}

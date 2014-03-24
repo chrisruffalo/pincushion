@@ -7,15 +7,15 @@ package com.github.chrisruffalo.multitunnel.exception;
  * @author cruffalo
  *
  */
-public class HydraErrorWrapper {
+public class PincushionErrorWrapper {
 
 	private String message;
 
-	public HydraErrorWrapper() {
+	public PincushionErrorWrapper() {
 		
 	}
 	
-	public HydraErrorWrapper(String message) {
+	public PincushionErrorWrapper(String message) {
 		this();
 		
 		this.message = message;

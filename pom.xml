@@ -11,7 +11,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
 		<!-- descriptive properties -->
-		<application.title>Multi-Tunnel</application.title>
+		<application.title>Pincushion</application.title>
 		
 		<!-- target language version -->
 		<multitunnel.java.version>1.7</multitunnel.java.version>

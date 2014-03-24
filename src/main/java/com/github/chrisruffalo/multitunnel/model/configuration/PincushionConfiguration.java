@@ -1,5 +1,6 @@
 package com.github.chrisruffalo.multitunnel.model.configuration;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -7,8 +8,10 @@ import java.io.OutputStream;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 
+import com.github.chrisruffalo.multitunnel.util.ApplicationProperties;
 
-public class MultiTunnelConfiguration {
+
+public class PincushionConfiguration {
 
 	private String basePath;
 	
@@ -18,7 +21,7 @@ public class MultiTunnelConfiguration {
 	
 	private int workers;
 
-	public MultiTunnelConfiguration() {
+	public PincushionConfiguration() {
 		// default options
 		this.managementInterface = "0.0.0.0";
 		this.managementPort = 8095;
@@ -29,8 +32,8 @@ public class MultiTunnelConfiguration {
 			this.workers = 1;
 		}
 		
-		// local directory
-		this.basePath = "./";
+		// directory in home path as default
+		this.basePath = System.getProperty("user.home") + File.separator + "." + ApplicationProperties.INSTANCE.title().toLowerCase() + File.separator;
 	}
 	
 	public String getBasePath() {
@@ -80,16 +83,16 @@ public class MultiTunnelConfiguration {
 		}
 	}	
 	
-	public static MultiTunnelConfiguration read(InputStream stream, Logger logger) {
+	public static PincushionConfiguration read(InputStream stream, Logger logger) {
 		
 		ObjectMapper instance = new ObjectMapper();
 		
-		MultiTunnelConfiguration configuration;
+		PincushionConfiguration configuration;
 		try {
-			configuration = instance.readValue(stream, MultiTunnelConfiguration.class);
+			configuration = instance.readValue(stream, PincushionConfiguration.class);
 			logger.info("Loaded configuration");
 		} catch (IOException e) {
-			configuration = new MultiTunnelConfiguration();
+			configuration = new PincushionConfiguration();
 			logger.error("Error reading configuration, falling back to defaults: " + e.getMessage(), e);
 		}
 		
