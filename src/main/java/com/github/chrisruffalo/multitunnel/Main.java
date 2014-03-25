@@ -105,12 +105,14 @@ public class Main {
 		ResourceLeakDetector.setLevel(Level.DISABLED);		
 		
 		// create tunnel holder
+		int commandLineTunnels = 0;
 		List<TunnelConfiguration> configurations = new LinkedList<>();
 		
 		// add tunnels from command line, which take higher priority
 		// than those configured in the home folder
 		if(options.getTunnels() != null && !options.getTunnels().isEmpty()) {
 			configurations.addAll(options.getTunnels());
+			commandLineTunnels = options.getTunnels().size();
 		}
 				
 		// calculate threads
@@ -128,7 +130,7 @@ public class Main {
 		File home = new File(config.getBasePath());
 		// cause an error if the home directory is already a file (not a dir)
 		if(home.exists() && home.isFile()) {
-			logger.error("The base directory '{}' exists and is a file, exiting", PathUtil.sanitize(home));
+			logger.error("The base directory '{}' exists and is a file, please delete this file so a directory can be created.", PathUtil.sanitize(home));
 			return;
 		}
 		// if the home directory does not exist, create
@@ -143,15 +145,17 @@ public class Main {
 			}
 		}
 		
-		// TODO: load modules
+		// TODO: load/init/check modules
 		//File modulesD = new File(PathUtil.sanitize(home) + File.separator + "modules.d" + File.separator);
 		
 		// load extant tunnels into configuration
+		int configuredTunnels = 0;
 		File tunnelsD = new File(PathUtil.sanitize(home) + File.separator + "tunnels.d" + File.separator);
 		TunnelFileManager tunnelFileManager = new TunnelFileManager(tunnelsD);
 		for(String interfaceAddress : tunnelFileManager.configuredInterfaces()) {
 			for(TunnelConfiguration configuration : tunnelFileManager.tunnelsForInterface(interfaceAddress)) {
 				configurations.add(configuration);
+				configuredTunnels++;
 			}
 		}
 
@@ -170,7 +174,7 @@ public class Main {
 			}
 						
 			// start servers
-			logger.info("Starting ({}) pre-configured tunnels...", configurations.size());
+			logger.info("Starting {} tunnels from command line and {} saved configurations ({} total)...", commandLineTunnels, configuredTunnels, configurations.size());
 			for(TunnelConfiguration configuration : configurations) {
 				// create an auto-name if none exists
 				if(configuration.getName() == null || configuration.getName().isEmpty()) {

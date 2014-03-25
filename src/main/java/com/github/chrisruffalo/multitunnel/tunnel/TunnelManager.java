@@ -39,6 +39,10 @@ public class TunnelManager {
 	}
 	
 	public TunnelReference create(final TunnelConfiguration config) {
+		return this.create(config, false);
+	}
+	
+	public TunnelReference create(final TunnelConfiguration config, boolean write) {
 		// make sure a configuration has been provided
 		if(config == null || config.getName() == null || config.getName().isEmpty()) {
 			String message = String.format("An invalid configuration was provided.  A configuration must be non-null, contain a non-null name, and a non-null port.");
@@ -130,8 +134,11 @@ public class TunnelManager {
 			// save in memory
 			this.tunnels.put(tunnel.id(), tunnel);
 			
-			// write to file
-			this.fileManager.saveTunnel(tunnel.configuration());
+			// only write to file if told
+			if(write) {
+				// write to file
+				this.fileManager.saveTunnel(tunnel.configuration());
+			}
 		
 			// return ref
 			TunnelReference reference = tunnel.ref();
@@ -143,13 +150,15 @@ public class TunnelManager {
 		return null;
 	}
 	
-	public void stop(String id) {
+	public void delete(String id) {
 		Tunnel tunnel = this.tunnels.get(id);
 		
 		if(tunnel != null) {
 			tunnel.stop();
 			
-			this.tunnels.remove(tunnel.id());
+			this.fileManager.deleteTunnel(tunnel.configuration());
+			
+			this.tunnels.remove(tunnel.id());			
 		} else {
 			this.logger.info("could not stop tunnel id:{}", id);
 		}
@@ -203,8 +212,8 @@ public class TunnelManager {
 	}
 
 	public TunnelReference update(String id, TunnelConfiguration configuration) {
-		this.stop(id);
-		return this.create(configuration);
+		this.delete(id);
+		return this.create(configuration, true);
 	}
 
 	public TunnelConfiguration configuration(String id) {

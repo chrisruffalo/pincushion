@@ -1,6 +1,8 @@
 package com.github.chrisruffalo.multitunnel.web.rest.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -17,6 +19,7 @@ import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelBootstrap;
 import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelConfiguration;
 import com.github.chrisruffalo.multitunnel.model.tunnel.TunnelReference;
 import com.github.chrisruffalo.multitunnel.tunnel.TunnelManager;
+import com.github.chrisruffalo.multitunnel.util.PortHelper;
 
 @Path("/tunnel")
 @Produces(MediaType.APPLICATION_JSON)
@@ -28,7 +31,6 @@ public class TunnelManagementService {
 	public TunnelManagementService(@Context TunnelManager manager) {
 		this.manager = manager;
 	}
-	
 	@Path("/info")
 	@GET
 	public List<TunnelReference> info() {
@@ -47,6 +49,16 @@ public class TunnelManagementService {
 		return this.manager.get(id);
 	}
 	
+	@Path("/{port}/available")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@GET
+	public Map<String, String> getPortAvailable(@PathParam("port") Integer port, String interfaceName) {
+		boolean result = PortHelper.INSTANCE.available(interfaceName, port);
+		Map<String,String> message = new HashMap<String, String>();
+		message.put("result", String.valueOf(result));
+		return message;
+	}
+	
 	@Path("/{id}/bootstrap")
 	@GET
 	public TunnelBootstrap getTunnelBootstrapById(@PathParam("id") String id) {
@@ -63,7 +75,7 @@ public class TunnelManagementService {
 	@DELETE
 	@Produces(MediaType.TEXT_PLAIN)
 	public boolean removeTunnelById(@PathParam("id") String id) {
-		this.manager.stop(id);
+		this.manager.delete(id);
 		return true;
 	}
 	
@@ -82,7 +94,7 @@ public class TunnelManagementService {
 	@Path("/start")
 	@PUT
 	public TunnelReference start(TunnelConfiguration configuration) {
-		TunnelReference ref = this.manager.create(configuration);
+		TunnelReference ref = this.manager.create(configuration, true);
 		return ref;
 	}
 	
