@@ -14,7 +14,7 @@
 		<application.title>Pincushion</application.title>
 		
 		<!-- target language version -->
-		<multitunnel.java.version>1.7</multitunnel.java.version>
+		<pincushion.java.version>1.7</pincushion.java.version>
 		
 		<!-- versions -->
 		<logback.version>1.1.1</logback.version>
@@ -233,7 +233,7 @@
 							<transformers>
 								<!-- set main class -->
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>com.github.chrisruffalo.multitunnel.Main</mainClass>
+									<mainClass>com.github.chrisruffalo.pincushion.Main</mainClass>
 								</transformer>
 								<!-- merge service files -->
     							<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
@@ -251,8 +251,8 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<configuration>
-						<source>${multitunnel.java.version}</source>
-						<target>${multitunnel.java.version}</target>
+						<source>${pincushion.java.version}</source>
+						<target>${pincushion.java.version}</target>
 						<fork>true</fork>
 					</configuration>
 				</plugin>							
