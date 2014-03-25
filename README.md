@@ -1,4 +1,4 @@
-multi-tunnel
+pincushion
 ============
 
-a simple application (in java) for tunneling network connections
+an application for managing various networking tunnels with a focus on ease of use and configuration.
