@@ -200,6 +200,44 @@
 			    </executions>
 			</plugin>
 			
+			<!-- gzip individual files -->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+			  	<version>1.7</version>
+			  	<executions>
+			    	<execution>
+			      		<phase>process-resources</phase>
+			      		<configuration>
+			        		<target>
+			        			<!-- gzip main index file -->
+								<gzip src="${project.build.directory}/classes/web/index.html" destfile="${project.build.directory}/classes/web/index.html.gz"/>
+								
+								<!-- gzip template html files -->
+								<gzip src="${project.build.directory}/classes/web/templates/module_add.html" destfile="${project.build.directory}/classes/web/templates/module_add.html.gz"/>
+								<gzip src="${project.build.directory}/classes/web/templates/module_details.html" destfile="${project.build.directory}/classes/web/templates/module_details.html.gz"/>
+								<gzip src="${project.build.directory}/classes/web/templates/modules.html" destfile="${project.build.directory}/classes/web/templates/modules.html.gz"/>
+								<gzip src="${project.build.directory}/classes/web/templates/tunnel_form.html" destfile="${project.build.directory}/classes/web/templates/tunnel_form.html.gz"/>
+								<gzip src="${project.build.directory}/classes/web/templates/tunnels.html" destfile="${project.build.directory}/classes/web/templates/tunnels.html.gz"/>
+								
+								<!-- gzip font files -->
+								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.eot" destfile="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.eot.gz"/>
+								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.svg" destfile="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.svg.gz"/>
+								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.ttf" destfile="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.ttf.gz"/>
+								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.woff" destfile="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.woff.gz"/>
+								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/FontAwesome.otf" destfile="${project.build.directory}/classes/web/thirdparty/fonts/FontAwesome.otf.gz"/>
+								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.eot" destfile="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.eot.gz"/>
+								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.svg" destfile="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.svg.gz"/>
+								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.ttf" destfile="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.ttf.gz"/>
+								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.woff" destfile="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.woff.gz"/>
+			        		</target>
+			      		</configuration>
+			      		<goals>
+			        		<goal>run</goal>
+			      		</goals>
+		    		</execution>
+		  		</executions>
+			</plugin>
+			
 			<!-- compress javascript resources -->
 			<plugin>
 				<groupId>net.alchim31.maven</groupId>
@@ -365,6 +403,19 @@
 										<versionRange>[1.4.0,)</versionRange>
 										<goals>
 											<goal>compress</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-antrun-plugin</artifactId>
+										<versionRange>[1.7,)</versionRange>
+										<goals>
+											<goal>run</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>

@@ -25,8 +25,14 @@ public class ResourceStaticGzipHandler extends ResourceHandler {
 	    	final Resource resource = super.getResource(path + ".gz");
    	
 	    	if(resource.exists()) {
-				this.logger.trace("found pre-gzipped resouce for: " + path);
-	    		return resource;
+				Resource original = super.getResource(path);
+				// only return gzipped resource if the size
+				// is smaller than the original resource
+				if(original.length() > resource.length()) {	    		
+	    			return resource;
+				} else {
+					return original;
+				}
 	    	}
     	}
     	return super.getResource(path);
