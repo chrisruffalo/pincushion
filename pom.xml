@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.chrisruffalo</groupId>
-  <artifactId>multi-tunnel</artifactId>
+  <artifactId>pincushion</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>multi-tunnel</name>
-  <description>simple tcp tunnels</description>
+  <name>pincushion</name>
+  <description>an application for handling network tunneling with a focus on ease of configuration and administration</description>
   
   	<properties>
 		<!-- source output version -->
@@ -37,7 +37,7 @@
 		    <version>${logback.version}</version>
 		</dependency>
 		
-		<!-- direct nio tcp -->
+		<!-- direct nio network handling -->
 		<dependency>
 		    <groupId>io.netty</groupId>
 		    <artifactId>netty-all</artifactId>
