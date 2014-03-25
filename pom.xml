@@ -186,7 +186,7 @@
 			        <!-- compiles bootstrap and app less into css and saves it, will need to delete to re-build -->
 			        <outputDirectory>${project.basedir}/src/main/resources/web/app/css</outputDirectory>
 			        <compress>true</compress>
-			        <lessJs>${project.basedir}/src/main/resources/less/less-1.7.0.js</lessJs>
+			        <lessJs>${project.basedir}/src/main/resources/less/thirdparty/js/less-1.7.0.js</lessJs>
 			        <includes>
 			            <include>main.less</include>
 			        </includes>
