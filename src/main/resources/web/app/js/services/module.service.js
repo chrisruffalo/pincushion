@@ -6,7 +6,7 @@ multiTunnelApp.factory("Module", function ($resource) {
     			'get':    {method:'GET', url: 'services/module/:tunnelId', params: {tunnelId:""}},
 				
 				// query/info (no param)
-				'query':  {method:'GET', isArray:true},
+				'query':  {method:'GET', isArray:true}
 			}
     );    
 });

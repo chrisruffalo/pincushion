@@ -200,6 +200,45 @@
 			    </executions>
 			</plugin>
 			
+			<!-- compress javascript resources -->
+			<plugin>
+				<groupId>net.alchim31.maven</groupId>
+				<artifactId>yuicompressor-maven-plugin</artifactId>
+				<version>1.4.0</version>
+				<executions>
+				  <execution>
+				    <goals>
+				      <goal>compress</goal>
+				    </goals>
+				  </execution>
+				</executions>        
+				<configuration>
+					<jswarn>false</jswarn>
+					<nomunge>true</nomunge>
+			  		<nosuffix>true</nosuffix>
+		  			<aggregations>
+						<aggregation>
+						    <!-- remove files after aggregation (default: false) -->
+              				<removeIncluded>true</removeIncluded>						
+							<!-- insert new line after each concatenation (default: false) -->
+							<insertNewLine>true</insertNewLine>
+							<!-- output to classes dir as pincushion.js (after all other js files are removed) -->
+							<output>${project.build.directory}/classes/web/app/js/pincushion.js</output>
+							<!-- files to include, path relative to output's directory or absolute path-->
+							<includes>
+							  <include>**/*.js</include>
+							</includes>
+			      		</aggregation>
+			    	</aggregations>
+			    	<!-- don't compress -->
+			    	<excludes>
+			    		<exclude>**/less/*</exclude>
+						<exclude>**/*.css</exclude>
+						<exclude>**/static/**/*.js</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			
 			<!-- create single executable jar -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -276,6 +315,19 @@
 										</versionRange>
 										<goals>
 											<goal>prepare-agent</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>net.alchim31.maven</groupId>
+										<artifactId>yuicompressor-maven-plugin</artifactId>
+										<versionRange>[1.4.0,)</versionRange>
+										<goals>
+											<goal>compress</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
