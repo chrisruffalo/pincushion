@@ -19,6 +19,7 @@ import com.github.chrisruffalo.pincushion.model.tunnel.TunnelBootstrap;
 import com.github.chrisruffalo.pincushion.model.tunnel.TunnelConfiguration;
 import com.github.chrisruffalo.pincushion.model.tunnel.TunnelReference;
 import com.github.chrisruffalo.pincushion.tunnel.TunnelManager;
+import com.github.chrisruffalo.pincushion.util.InterfaceHelper;
 import com.github.chrisruffalo.pincushion.util.PortHelper;
 
 @Path("/tunnel")
@@ -50,9 +51,16 @@ public class TunnelManagementService {
 	}
 	
 	@Path("/{port}/available")
-	@Consumes(MediaType.TEXT_PLAIN)
-	@GET
-	public Map<String, String> getPortAvailable(@PathParam("port") Integer port, String interfaceName) {
+	@POST
+	public Map<String, String> getPortAvailable(@PathParam("port") Integer port, Map<String, String> values) {
+		// get interface
+		String interfaceName = values.get("interfaceName");
+		if(interfaceName == null || interfaceName.isEmpty()) {
+			interfaceName = "0.0.0.0";
+		}		
+		interfaceName = InterfaceHelper.INSTANCE.sanitize(interfaceName);
+		
+		// check availability
 		boolean result = PortHelper.INSTANCE.available(interfaceName, port);
 		Map<String,String> message = new HashMap<String, String>();
 		message.put("result", String.valueOf(result));

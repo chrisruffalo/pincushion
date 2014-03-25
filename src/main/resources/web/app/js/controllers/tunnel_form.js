@@ -185,3 +185,47 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
 	// do load
 	$scope.load($routeParams.id);
 });
+
+// directive for validating ports (example from: http://stackoverflow.com/a/12865401/128339)
+multiTunnelApp.directive('portCheck', function(Tunnel) {
+  var toId;
+  return {
+    restrict: 'A',
+    require: 'ngModel',
+    link: function(scope, elem, attr, ctrl) { 
+      //when the scope changes, check the email.
+      scope.$watch(attr.ngModel, function(value) {
+    	// if value is null or not a number don't bother
+    	if(!value) {
+    		return;
+    	}
+    	
+    	// if the value is not a number just set invalid without remote check
+    	if(!util.isNumber(value)) {
+    		ctrl.$setValidity('inputTunnelSourcePort', false);
+    		return;
+    	}
+    	
+        // if there was a previous attempt, stop it.
+        if(scope.portCheckTimer) {
+        	clearTimeout(scope.portCheckTimer);
+        }
+
+        // start a new attempt with a delay to keep it from
+        // getting too "chatty".
+        scope.portCheckTimer = setTimeout(function(){
+        	var portResponse = Tunnel.available({tunnelPort: value}, {interfaceName: "0.0.0.0"}, function(data){
+        		// default state is invalid
+        		var valid = false;
+        		// check that response is returned and is not "false" string
+        		if(portResponse && portResponse.result && portResponse.result != "false") {
+        			valid = true;
+        		}     
+        		//set the validity of the field
+                ctrl.$setValidity('inputTunnelSourcePort', valid);
+        	});
+        }, 200);
+      })
+    }
+  }
+});

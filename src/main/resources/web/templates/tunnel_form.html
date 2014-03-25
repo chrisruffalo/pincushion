@@ -14,58 +14,53 @@
 	</div>
 </div>
 
-<form novalidate name="tunnelInputForm" class="form-horizontal" role="form">
-  <!-- tunnel name -->
-  <div class="form-group" ng-class="{'has-error': tunnelInputForm.inputTunnelName.$invalid && tunnelInputForm.inputTunnelName.$dirty}">
-    <label for="inputTunnelName" class="col-sm-2 control-label">Tunnel Name</label>
-    <div class="col-sm-4">
-      <input type="text" class="form-control" name="inputTunnelName" id="inputTunnelName" required ng-model="bootstrap.configuration.name" placeholder="">
-    </div>
-    <p class="help-block text-muted">A unique name for the tunnel that can be used to identify it more easily.</p>
-  </div>
-  
-  <!-- tunnel bind interface -->
-  <div class="form-group">
-    <label for="inputTunnelSourceInterface" class="col-sm-2 control-label">Bind Interface</label>
-	<div class="col-sm-2" id="bind-suggestions">
-		<input sf-typeahead class="form-control" id="inputTunnelBindInterface" type="text" options="typeAheadOptions" datasets="suggestionSources" ng-model="bootstrap.configuration.sourceInterface" placeholder="0.0.0.0">
+<div class="row">
+	<div class="col-sm-offset-1 col-sm-10">
+		<form novalidate name="tunnelInputForm" role="form">
+		  <!-- tunnel name -->
+		  <div class="form-group" ng-class="{'has-error': tunnelInputForm.inputTunnelName.$invalid && tunnelInputForm.inputTunnelName.$dirty}">
+		    <label for="inputTunnelName" class="control-label">Tunnel Name</label>
+		    <input type="text" class="form-control col-sm-3" name="inputTunnelName" id="inputTunnelName" required ng-model="bootstrap.configuration.name" placeholder="">
+		    <span class="help-block text-muted">A unique name for the tunnel that can be used to identify it more easily.</span>
+		  </div>
+		  
+		  <!-- tunnel bind interface -->
+		  <div class="form-group">
+		    <label for="inputTunnelSourceInterface" class="control-label">Bind Interface</label>
+			<input sf-typeahead class="form-control col-sm-2" id="inputTunnelBindInterface" type="text" options="typeAheadOptions" datasets="suggestionSources" ng-model="bootstrap.configuration.sourceInterface" placeholder="0.0.0.0">
+			<span class="help-block text-muted" style="display: block;">The interface (physical, hostname, or address) that the tunnel will be bound to.</span>
+		  </div>    
+		  
+		  <!-- tunnel source port -->
+		  <div class="form-group" ng-class="{'has-error has-feedback': tunnelInputForm.inputTunnelSourcePort.$invalid && tunnelInputForm.inputTunnelSourcePort.$dirty}">
+		    <label for="inputTunnelSourcePort" class="control-label">Source Port</label>
+		    <input type="text" class="form-control col-sm-1" name="inputTunnelSourcePort" id="inputTunnelSourcePort" type="number" min="1" max="65536" port-check ng-model="bootstrap.configuration.sourcePort" placeholder="">
+		    <span ng-if="tunnelInputForm.inputTunnelSourcePort.$invalid && tunnelInputForm.inputTunnelSourcePort.$dirty" class="glyphicon glyphicon-remove form-control-feedback"></span>
+		  </div>
+		  
+		  <!-- tunnel destination host -->
+		  <div class="form-group">
+		    <label for="inputTunnelDestinationHost" class="control-label">Destination Host</label>
+		    <input type="text" class="form-control col-sm-3" id="inputTunnelDestinationHost" ng-model="bootstrap.configuration.destHost" placeholder="">
+		  </div>
+		  
+		  <!-- tunnel destination port -->
+		  <div class="form-group">
+		    <label for="inputTunnelDestinationPort" class="control-label">Destination Port</label>
+		    <input type="text" class="form-control col-sm-1" id="inputTunnelDestinationPort" ng-model="bootstrap.configuration.destPort" placeholder="">
+		  </div>
+		  
+		  <!-- controls -->
+		  <div class="form-group">
+		    <div class="col-sm-2">
+		      <button type="submit" ng-click="reset()" class="btn btn-default">reset</button>
+		      <button type="submit" ng-disabled="tunnelInputForm.$invalid" ng-class="{'disabled': tunnelInputForm.$invalid}" ng-click="save(bootstrap.configuration)" class="btn btn-primary">save</button>
+		    </div>
+		    <div class="col-sm-offset-1 col-sm-1">
+		      <!-- do nothing and return -->
+		      <button ng-click="cancel()" class="btn btn-default">cancel</button>
+		    </div>
+		  </div>
+		</form>
 	</div>
-	<p class="help-block text-muted">The interface (physical, hostname, or address) that the tunnel will be bound to.</p>
-  </div>  
-  
-  <!-- tunnel source port -->
-  <div class="form-group">
-    <label for="inputTunnelSourcePort" class="col-sm-2 control-label">Source Port</label>
-    <div class="col-sm-1">
-      <input type="text" class="form-control" id="inputTunnelSourcePort" ng-model="bootstrap.configuration.sourcePort" placeholder="">
-    </div>
-  </div>
-  
-  <!-- tunnel destination host -->
-  <div class="form-group">
-    <label for="inputTunnelDestinationHost" class="col-sm-2 control-label">Destination Host</label>
-    <div class="col-sm-2">
-      <input type="text" class="form-control" id="inputTunnelDestinationHost" ng-model="bootstrap.configuration.destHost" placeholder="">
-    </div>
-  </div>
-  
-  <!-- tunnel destination port -->
-  <div class="form-group">
-    <label for="inputTunnelDestinationPort" class="col-sm-2 control-label">Destination Port</label>
-    <div class="col-sm-1">
-      <input type="text" class="form-control" id="inputTunnelDestinationPort" ng-model="bootstrap.configuration.destPort" placeholder="">
-    </div>
-  </div>
-  
-  <!-- controls -->
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-2">
-      <button type="submit" ng-click="reset()" class="btn btn-default">reset</button>
-      <button type="submit" ng-disabled="tunnelInputForm.$invalid" ng-class="{'disabled': tunnelInputForm.$invalid}" ng-click="save(bootstrap.configuration)" class="btn btn-primary">save</button>
-    </div>
-    <div class="col-sm-offset-1 col-sm-1">
-      <!-- do nothing and return -->
-      <button ng-click="cancel()" class="btn btn-default">cancel</button>
-    </div>
-  </div>
-</form>
+</div>

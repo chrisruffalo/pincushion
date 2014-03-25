@@ -8,7 +8,7 @@ multiTunnelApp.factory("Tunnel", function ($resource) {
 				// query/info (no param)
 				'query':  {method:'GET', isArray:true},
 				'bootstrap': {method:'GET', url: 'services/tunnel/bootstrap'},
-				'blocked': {method:'GET', url: 'services/tunnel/blocked'},
+				'available': {method:'POST', url: 'services/tunnel/:tunnelPort/available', params: {tunnelPort:""}},
 
 				// instance
 				'strap':  {method:'GET', url: 'services/tunnel/:tunnelId/bootstrap', params: {tunnelId:"@id"}},
