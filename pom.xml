@@ -228,13 +228,13 @@
 							<!-- files to include, path relative to output's directory or absolute path-->
 							<includes>
 								<!-- load third-party dependencies -->
-							 	<include>static/js/jquery-2.1.0.min.js</include>
-							 	<include>static/js/bootstrap.min.js</include>
-							 	<include>static/js/typeahead.bundle.min.js</include>
+							 	<include>thirdparty/js/jquery-2.1.0.min.js</include>
+							 	<include>thirdparty/js/bootstrap.min.js</include>
+							 	<include>thirdparty/js/typeahead.bundle.min.js</include>
 							
 								<!-- load angular and angular modules -->
-								<include>static/js/angular.min.js</include>
-							 	<include>static/js/**/angular*.js</include>
+								<include>thirdparty/js/angular.min.js</include>
+							 	<include>thirdparty/js/**/angular*.js</include>
 							
 								<!-- top level pincushion app should be loaded first -->
 								<include>app/js/app.js</include>
@@ -254,7 +254,7 @@
 			    	<excludes>
 			    		<exclude>**/less/*</exclude>
 						<exclude>**/*.css</exclude>
-						<exclude>**/static/**/*.js</exclude>
+						<exclude>**/thirdparty/**/*.js</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
