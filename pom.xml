@@ -217,6 +217,41 @@
 					<nomunge>true</nomunge>
 			  		<nosuffix>true</nosuffix>
 		  			<aggregations>
+		  				<!-- js dependency aggregation -->
+						<aggregation>
+						    <!-- remove files after aggregation (default: false) -->
+              				<removeIncluded>true</removeIncluded>						
+							<!-- insert new line after each concatenation (default: false) -->
+							<insertNewLine>true</insertNewLine>
+							<!-- output to classes dir as dependencies.js (after all other js files are removed) -->
+							<output>${project.build.directory}/classes/web/static/js/dependencies.js</output>
+							<!-- files to include, path relative to output's directory or absolute path-->
+							<includes>
+							 	<include>jquery-2.1.0.min.js</include>
+							 	<include>bootstrap.min.js</include>
+							 	<include>typeahead.bundle.min.js</include>
+							</includes>
+							<excludes>
+								<exclude>**/angular*.js</exclude>
+							</excludes>
+			      		</aggregation>
+
+		  				<!-- angular js dependency aggregation -->
+						<aggregation>
+						    <!-- remove files after aggregation (default: false) -->
+              				<removeIncluded>true</removeIncluded>						
+							<!-- insert new line after each concatenation (default: false) -->
+							<insertNewLine>true</insertNewLine>
+							<!-- output to classes dir as angular-bundle.js (after all other js files are removed) -->
+							<output>${project.build.directory}/classes/web/static/js/angular-bundle.js</output>
+							<!-- files to include, path relative to output's directory or absolute path-->
+							<includes>
+								<include>angular.min.js</include>
+							 	<include>**/angular*.js</include>
+							</includes>
+			      		</aggregation>
+
+		  				<!-- pincushion app dependency aggregation -->
 						<aggregation>
 						    <!-- remove files after aggregation (default: false) -->
               				<removeIncluded>true</removeIncluded>						
@@ -226,7 +261,7 @@
 							<output>${project.build.directory}/classes/web/app/js/pincushion.js</output>
 							<!-- files to include, path relative to output's directory or absolute path-->
 							<includes>
-							  <include>**/*.js</include>
+							 	<include>**/*.js</include>
 							</includes>
 			      		</aggregation>
 			    	</aggregations>
