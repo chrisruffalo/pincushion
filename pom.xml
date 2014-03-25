@@ -216,7 +216,25 @@
 					<jswarn>false</jswarn>
 					<nomunge>true</nomunge>
 			  		<nosuffix>true</nosuffix>
+			  		<gzip>true</gzip>
 		  			<aggregations>
+		  				<!-- css aggregation -->
+		  				<aggregation>
+						    <!-- remove files after aggregation (default: false) -->
+              				<removeIncluded>true</removeIncluded>						
+							<!-- insert new line after each concatenation (default: false) -->
+							<insertNewLine>true</insertNewLine>
+							<!-- output to classes dir as pincushion.js (after all other js files are removed) -->
+							<output>${project.build.directory}/classes/web/pincushion.css</output>
+		  					<!-- files to include, path relative to output's directory or absolute path-->
+		  					<includes>
+		  						<!-- main css -->
+		  						<include>app/css/main.css</include>
+		  						<!-- css for fontawesome -->
+		  						<include>thirdparty/css/font-awesome.min.css</include>
+		  					</includes>
+		  				</aggregation>
+		  			
 		  				<!-- pincushion app javascript aggregation -->
 						<aggregation>
 						    <!-- remove files after aggregation (default: false) -->
@@ -250,11 +268,10 @@
 							</includes>
 			      		</aggregation>
 			    	</aggregations>
-			    	<!-- don't compress -->
+			    	<!-- don't compress/minify/obfuscate anything, just aggregate and gzip -->
 			    	<excludes>
 			    		<exclude>**/less/*</exclude>
-						<exclude>**/*.css</exclude>
-						<exclude>**/thirdparty/**/*.js</exclude>
+						<exclude>**/*.js</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

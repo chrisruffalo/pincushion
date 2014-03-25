@@ -3,16 +3,20 @@ package com.github.chrisruffalo.pincushion.web;
 import io.netty.channel.EventLoopGroup;
 
 import java.net.InetSocketAddress;
+import java.util.EnumSet;
 import java.util.concurrent.CountDownLatch;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.ServletContextEvent;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlets.GzipFilter;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.resource.Resource;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
@@ -51,11 +55,11 @@ public class ManagementServer {
 		final Server _server = new Server(addr);
 		
 		// create static resource handler
-		ResourceHandler resourceHandler = new ResourceHandler();
+		final ResourceHandler resourceHandler = new ResourceStaticGzipHandler();
 		resourceHandler.setDirectoriesListed(false);
 		resourceHandler.setWelcomeFiles(new String[]{"index.html"});
 		resourceHandler.setBaseResource(Resource.newClassPathResource("/web/"));
-				
+		
 		// create context handler for java/servlet resources at "/services"
 	    final ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 	    contextHandler.setContextPath("/services");
@@ -83,11 +87,16 @@ public class ManagementServer {
 	    // set rest servlet handler to /* pattern
 	    contextHandler.addServlet(restEasyServletHolder, "/*");
 
+	    // create gzip mechanism
+	    GzipFilter gzipFilter = new GzipFilter();
+	    EnumSet<DispatcherType> dispatchers = EnumSet.of(DispatcherType.REQUEST);
+	    contextHandler.addFilter(new FilterHolder(gzipFilter), "/*", dispatchers);
+	    
 	    // create handler list
 	    final HandlerList handlers = new HandlerList();
 	    handlers.setHandlers(new Handler[] { 
-	    	resourceHandler,
-	    	contextHandler 
+	    	 contextHandler,
+	    	 resourceHandler
 	    });
 	    
 	    // add handlers to server
