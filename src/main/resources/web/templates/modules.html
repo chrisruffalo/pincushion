@@ -1,1 +1,50 @@
-<h2 class="sub-header">Modules</h2>
+<!-- where the header goes -->
+<div class="row">
+	<div class="col-sm-offset-1 col-sm-10">
+		<h2 class="sub-header">Modules</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm-offset-1 col-sm-10">
+		<!-- button to add module -->
+		<a href="#add-module" class="btn btn-primary btn-md pull-right"><i class="fa fa-plus"></i> add new module</a>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm-offset-1 col-sm-10">
+		<!-- table of items -->
+		<div class="table-responsive">
+			<div ng-if="!modules || modules.length < 1">
+				<!-- content for when there are no modules -->
+			</div>
+			<table ng-if="modules && modules.length >= 1" class="table table-striped">
+				<thead>
+					<tr>
+						<th><!-- icon/status --></th>
+						<th>name</th>
+						<th>type</th>
+						<th><!-- controls --></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="module in modules">
+						<!-- general module status -->
+						<td>
+							<i class="fa fa-check"></i>
+						</td>
+						<!-- info -->
+						<td>{{module.name}}</td>
+						<td>{{module.type}}</td>
+						<!-- controls -->
+						<td>
+							<button ng-click="edit(module.id)" class="btn btn-sm btn-default"><i class="fa fa-pencil"></i></button>
+							<button ng-click="remove(module)" class="btn btn-sm btn-default"><i class="fa fa-times"></i></button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

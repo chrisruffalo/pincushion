@@ -1,0 +1,30 @@
+<!-- where the header goes -->
+<div class="row">
+	<div class="col-sm-offset-1 col-sm-10">
+		<h2 class="sub-header" ng-if="id">Module Details</h2>
+	</div>
+</div>
+
+<!-- row for form error -->
+<div class="row">
+	<div class="col-sm-offset-1 col-sm-10">
+		<!-- form-level error -->
+  		<div id="moduleFormError" class="alert alert-danger" style="display: none;"></div>
+	</div>
+</div>
+
+<form novalidate name="moduleInputForm" class="form-horizontal" role="form">
+
+  
+  <!-- controls -->
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-2">
+      <button type="submit" ng-click="reset()" class="btn btn-default">reset</button>
+      <button type="submit" ng-disabled="moduleInputForm.$invalid" ng-class="{'disabled': moduleInputForm.$invalid}" ng-click="save(bootstrap.configuration)" class="btn btn-primary">save</button>
+    </div>
+    <div class="col-sm-offset-1 col-sm-1">
+      <!-- do nothing and return -->
+      <button ng-click="cancel()" class="btn btn-default">cancel</button>
+    </div>
+  </div>
+</form>
