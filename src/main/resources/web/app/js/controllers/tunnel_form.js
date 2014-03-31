@@ -1,9 +1,11 @@
 multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $routeParams, $timeout, $location, Tunnel) {
 	// set up text editor
     $scope.editorOptions = {
-        lineWrapping : true,
+        lineWrapping : false,
         lineNumbers: true,
-        mode: 'json',
+        mode: 'application/json',
+        styleActiveLine: true,
+        matchBrackets: true
     };
 	
     // common go back to tunnel screen
@@ -24,7 +26,7 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
 					return Bloodhound.tokenizers.whitespace(d.value); 
 				},
 				queryTokenizer: Bloodhound.tokenizers.whitespace,
-				local: []
+				local: [] // source will be updated from ajax configuration bootstrap call
 			});
 		bloodhoundItem.initialize();
 		
@@ -159,14 +161,14 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
     			// do nothing for now
     		}
     	}
-    });
-    
+    });    
+   
     // create inverse for shadow binding
     $scope.$watch('bootstrap.configuration', function(newValue, oldValue) {
     	if(newValue != oldValue) {
-    		$scope.modelJsonStringShadow = JSON.stringify(newValue, null, 2);
+    		$scope.modelJsonStringShadow = JSON.stringify(newValue, null, 4);
     	}
-    }, true);
+    }, true);   
     
     // what to do when an http error is returned
     $scope.onError = function(errorHttpResponse) {
@@ -202,6 +204,15 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
     			$scope.returnToTunnels();
 	    	}, $scope.onError);
     	}
+    };
+    
+    // force update shadow
+    $scope.forceShadow = function() {
+    	// wait just enough to let it show
+    	setTimeout(function() {
+	    	var updateThatChanges = new Date();
+	    	$scope.shadowForce = updateThatChanges.getTime();
+    	},20);
     };
     
     // make sure error is hidden

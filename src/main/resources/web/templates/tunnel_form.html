@@ -14,58 +14,117 @@
 	</div>
 </div>
 
+<!-- tunnel form segments -->
 <div class="row">
 	<div class="col-sm-offset-1 col-sm-10">
-		<form novalidate name="tunnelInputForm" role="form">
-		  <!-- tunnel name -->
-		  <div class="form-group" ng-class="{'has-error': tunnelInputForm.inputTunnelName.$invalid && tunnelInputForm.inputTunnelName.$dirty}">
-		    <label for="inputTunnelName" class="control-label">Tunnel Name</label>
-		    <input type="text" class="form-control col-sm-3" name="inputTunnelName" id="inputTunnelName" required ng-model="bootstrap.configuration.name" placeholder="">
-		    <span class="help-block text-muted">A unique name for the tunnel that can be used to identify it more easily.</span>
-		  </div>
-		  
-		  <!-- tunnel bind interface -->
-		  <div class="form-group">
-		    <label for="inputTunnelSourceInterface" class="control-label">Bind Interface</label>
-			<input sf-typeahead class="form-control col-sm-2" id="inputTunnelBindInterface" type="text" options="typeAheadOptions" datasets="suggestionSources" ng-model="bootstrap.configuration.sourceInterface" placeholder="0.0.0.0">
-			<span class="help-block text-muted" style="display: block;">The interface (physical, hostname, or address) that the tunnel will be bound to.</span>
-		  </div>    
-		  
-		  <!-- tunnel source port -->
-		  <div class="form-group" ng-class="{'has-error has-feedback': tunnelInputForm.inputTunnelSourcePort.$invalid && tunnelInputForm.inputTunnelSourcePort.$dirty}">
-		    <label for="inputTunnelSourcePort" class="control-label">Source Port</label>
-		    <input type="text" class="form-control col-sm-1" name="inputTunnelSourcePort" id="inputTunnelSourcePort" type="number" min="1" max="65536" port-check ng-model="bootstrap.configuration.sourcePort" placeholder="">
-		    <span ng-if="tunnelInputForm.inputTunnelSourcePort.$invalid && tunnelInputForm.inputTunnelSourcePort.$dirty" class="glyphicon glyphicon-remove form-control-feedback"></span>
-		  </div>
-		  
-		  <!-- tunnel destination host -->
-		  <div class="form-group">
-		    <label for="inputTunnelDestinationHost" class="control-label">Destination Host</label>
-		    <input type="text" class="form-control col-sm-3" id="inputTunnelDestinationHost" ng-model="bootstrap.configuration.destHost" placeholder="">
-		  </div>
-		  
-		  <!-- tunnel destination port -->
-		  <div class="form-group">
-		    <label for="inputTunnelDestinationPort" class="control-label">Destination Port</label>
-		    <input type="text" class="form-control col-sm-1" id="inputTunnelDestinationPort" ng-model="bootstrap.configuration.destPort" placeholder="">
-		  </div>
-		  
-		  <div class="form-group">
-		  <label for="inputTunnelDestinationPort" class="control-label">JSON Code</label>
-		  	<textarea ui-codemirror ng-model="modelJsonStringShadow"></textarea>
-		  </div>
-		  
-		  <!-- controls -->
-		  <div class="form-group">
-		    <div class="col-sm-2">
-		      <button type="submit" ng-click="reset()" class="btn btn-default">reset</button>
-		      <button type="submit" ng-disabled="tunnelInputForm.$invalid" ng-class="{'disabled': tunnelInputForm.$invalid}" ng-click="save(bootstrap.configuration)" class="btn btn-primary">save</button>
-		    </div>
-		    <div class="col-sm-offset-1 col-sm-1">
-		      <!-- do nothing and return -->
-		      <button ng-click="cancel()" class="btn btn-default">cancel</button>
-		    </div>
-		  </div>
-		</form>
+		<ul class="nav nav-tabs">
+		  <li class="active"><a data-target="#tunnel" data-toggle="tab">Tunnel</a></li>
+		  <li><a data-target="#code" ng-click="forceShadow()" data-toggle="tab">Raw Code</a></li>
+		</ul>
 	</div>
 </div>
+
+<!-- force break -->
+<p></p>
+
+<!-- form goes outside -->
+<form novalidate name="tunnelInputForm" role="form">
+
+	<div class="row">
+		<div class="col-sm-12">
+
+			<div class="tab-content">
+				<div class="tab-pane active" id="tunnel">
+					<div class="row" >
+						<div class="col-sm-offset-1 col-sm-10">
+						  
+						  <!-- name detail -->
+						  <div class="row">
+							  <div class="col-sm-10">
+						  	  	<!-- tunnel name -->
+							  	<div class="form-group" ng-class="{'has-error': tunnelInputForm.inputTunnelName.$invalid && tunnelInputForm.inputTunnelName.$dirty}">
+									<label for="inputTunnelName" class="control-label">Tunnel Name</label>
+								    <input type="text" class="form-control" name="inputTunnelName" id="inputTunnelName" required ng-model="bootstrap.configuration.name" placeholder="">
+								    <span class="help-block">A unique name for the tunnel that can be used to identify it more easily in the web interface and on disk.</span>
+							    </div>				    
+							  </div>					  
+						  </div>
+						  
+						  <!-- input side -->
+						  <div class="row">
+							  <div class="col-sm-6">
+								  <!-- tunnel bind interface -->
+								  <div class="form-group">
+								    <label for="inputTunnelSourceInterface" class="control-label">Bind Interface</label>
+									<input required sf-typeahead class="form-control" id="inputTunnelBindInterface" type="text" options="typeAheadOptions" datasets="suggestionSources" ng-model="bootstrap.configuration.sourceInterface" placeholder="0.0.0.0">
+									<span class="help-block" style="display: block;">The interface (physical, hostname, or address) that the tunnel will be bound to.  Ex: '127.0.0.1', 'localhost', '0.0.0.0'</span>
+								  </div>    
+							  </div>
+							  
+							  <div class="col-sm-4">
+								  <!-- tunnel source port -->
+								  <div class="form-group" ng-class="{'has-error has-feedback': tunnelInputForm.inputTunnelSourcePort.$invalid && tunnelInputForm.inputTunnelSourcePort.$dirty, 'has-success has-feedback': tunnelInputForm.inputTunnelSourcePort.$valid && tunnelInputForm.inputTunnelSourcePort.$dirty}">
+								    <label for="inputTunnelSourcePort" class="control-label">Source Port</label>
+								    <input required type="text" class="form-control" name="inputTunnelSourcePort" id="inputTunnelSourcePort" type="number" min="1" max="65536" port-check ng-model="bootstrap.configuration.sourcePort" placeholder="">
+								    <span ng-if="tunnelInputForm.inputTunnelSourcePort.$dirty" ng-class="{'glyphicon-remove': tunnelInputForm.inputTunnelSourcePort.$invalid && tunnelInputForm.inputTunnelSourcePort.$dirty, 'glyphicon-ok': tunnelInputForm.inputTunnelSourcePort.$valid && tunnelInputForm.inputTunnelSourcePort.$dirty}" class="glyphicon form-control-feedback"></span>
+								    <span ng-if="tunnelInputForm.inputTunnelSourcePort.$pristine || tunnelInputForm.inputTunnelSourcePort.$valid" class="help-block" style="display: block;">The port, between 1 and 65536, that the tunnel should bind to.  Ports less than or equal to 1024 require special permissions on some operating systems.</span>
+								  </div>  
+							  </div>
+						  </div>
+						  				  
+						  <!-- output side -->
+						  <div class="row">
+						  	<div class="col-sm-6">
+							  <!-- tunnel destination host -->
+							  <div class="form-group">
+							    <label for="inputTunnelDestinationHost" class="control-label">Destination Host</label>
+							    <input required type="text" class="form-control col-sm-3" id="inputTunnelDestinationHost" ng-model="bootstrap.configuration.destHost" placeholder="">
+								<span class="help-block" style="display: block;">The address or host name (Ex: 'google.com' or '192.168.100.12') that traffic on this tunnel should be forwarded to</span>
+							  </div>	
+						  	</div>
+						  	
+						  	<div class="col-sm-4">
+							  <!-- tunnel destination port -->
+							  <div class="form-group">
+							    <label for="inputTunnelDestinationPort" class="control-label">Destination Port</label>
+							    <input required type="text" class="form-control col-sm-1" id="inputTunnelDestinationPort" ng-model="bootstrap.configuration.destPort" placeholder="">
+							    <span class="help-block" style="display: block;">The port (Ex: 80 for HTTP traffic) on the destination address that the traffic should be forwarded to</span>
+							  </div>	
+						  	</div>
+						  </div>	  
+						</div>
+					</div>
+				</div>
+		
+				<!-- pane for json code display -->
+				<div class="tab-pane" id="code">
+					<div class="row" >
+						<div class="col-sm-offset-1 col-sm-10">
+						  <!-- edit source directly -->		  
+						  <div class="form-group">
+					  		<textarea ui-codemirror="editorOptions" ui-refresh="shadowForce" ng-model="modelJsonStringShadow"></textarea>
+						  </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- form controls -->
+	<div class="row">
+		<div class="col-sm-offset-1 col-sm-10">
+			<!-- controls -->
+			<div class="form-group">
+			  <div class="col-sm-2">
+			    <button type="submit" ng-disabled="tunnelInputForm.$pristine" ng-class="{'disabled': tunnelInputForm.$pristine}" ng-click="reset()" class="btn btn-default">reset</button>
+			    <button type="submit" ng-disabled="tunnelInputForm.$invalid" ng-class="{'disabled': tunnelInputForm.$invalid}" ng-click="save(bootstrap.configuration)" class="btn btn-primary">save</button>
+			  </div>
+			  <div class="col-sm-offset-1 col-sm-1">
+			    <!-- do nothing and return -->
+			    <button ng-click="cancel()" class="btn btn-default">cancel</button>
+			  </div>
+			</div>
+		</div>
+	</div>
+</form>
