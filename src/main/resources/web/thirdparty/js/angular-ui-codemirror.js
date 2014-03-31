@@ -112,6 +112,10 @@ angular.module('ui.codemirror', [])
           if (angular.isFunction(opts.onLoad)) {
             opts.onLoad(codeMirror);
           }
+          
+          // save codeMirror to scope
+          scope.mirror = codeMirror;
+          
         };
       }
     };

@@ -10,7 +10,9 @@
 <div class="row">
 	<div class="col-sm-offset-1 col-sm-10">
 		<!-- form-level error -->
-  		<div id="tunnelFormError" class="alert alert-danger" style="display: none;"></div>
+  		<div id="tunnelFormError" ng-if="status.alert" class="alert alert-danger">
+  			<h4>Oh no!</h4><p>{{status.alert}}</p>
+  		</div>
 	</div>
 </div>
 
@@ -19,7 +21,7 @@
 	<div class="col-sm-offset-1 col-sm-10">
 		<ul class="nav nav-tabs">
 		  <li class="active"><a data-target="#tunnel" data-toggle="tab">Tunnel</a></li>
-		  <li><a data-target="#code" ng-click="forceShadow()" data-toggle="tab">Raw Code</a></li>
+		  <li><a data-target="#code" ng-click="updateMirror()" data-toggle="tab">Raw Code</a></li>
 		</ul>
 	</div>
 </div>
@@ -56,8 +58,8 @@
 								  <!-- tunnel bind interface -->
 								  <div class="form-group">
 								    <label for="inputTunnelSourceInterface" class="control-label">Bind Interface</label>
-									<input required sf-typeahead class="form-control" id="inputTunnelBindInterface" type="text" options="typeAheadOptions" datasets="suggestionSources" ng-model="bootstrap.configuration.sourceInterface" placeholder="0.0.0.0">
-									<span class="help-block" style="display: block;">The interface (physical, hostname, or address) that the tunnel will be bound to.  Ex: '127.0.0.1', 'localhost', '0.0.0.0'</span>
+									<input required sf-typeahead class="form-control" id="inputTunnelSourceInterface" name="inputTunnelSourceInterface" type="text" options="typeAheadOptions" datasets="suggestionSources" ng-model="bootstrap.configuration.sourceInterface" placeholder="0.0.0.0">
+									<span class="help-block">The interface (physical, hostname, or address) that the tunnel will be bound to.  Ex: '127.0.0.1', 'localhost', '0.0.0.0'</span>
 								  </div>    
 							  </div>
 							  
@@ -67,7 +69,8 @@
 								    <label for="inputTunnelSourcePort" class="control-label">Source Port</label>
 								    <input required type="text" class="form-control" name="inputTunnelSourcePort" id="inputTunnelSourcePort" type="number" min="1" max="65536" port-check ng-model="bootstrap.configuration.sourcePort" placeholder="">
 								    <span ng-if="tunnelInputForm.inputTunnelSourcePort.$dirty" ng-class="{'glyphicon-remove': tunnelInputForm.inputTunnelSourcePort.$invalid && tunnelInputForm.inputTunnelSourcePort.$dirty, 'glyphicon-ok': tunnelInputForm.inputTunnelSourcePort.$valid && tunnelInputForm.inputTunnelSourcePort.$dirty}" class="glyphicon form-control-feedback"></span>
-								    <span ng-if="tunnelInputForm.inputTunnelSourcePort.$pristine || tunnelInputForm.inputTunnelSourcePort.$valid" class="help-block" style="display: block;">The port, between 1 and 65536, that the tunnel should bind to.  Ports less than or equal to 1024 require special permissions on some operating systems.</span>
+								    <span ng-if="tunnelInputForm.inputTunnelSourcePort.$pristine || tunnelInputForm.inputTunnelSourcePort.$valid" class="help-block">The port, between 1 and 65536, that the tunnel should bind to.  Ports less than or equal to 1024 require special permissions on some operating systems.</span>
+								    <span ng-if="status.inputTunnelSourcePort" class="help-block text-danger">{{status.inputTunnelSourcePort}}</span>
 								  </div>  
 							  </div>
 						  </div>
@@ -102,7 +105,7 @@
 						<div class="col-sm-offset-1 col-sm-10">
 						  <!-- edit source directly -->		  
 						  <div class="form-group">
-					  		<textarea ui-codemirror="editorOptions" ui-refresh="shadowForce" ng-model="modelJsonStringShadow"></textarea>
+					  		<textarea ui-codemirror="editorOptions" ng-model="modelJsonStringShadow"></textarea>
 						  </div>
 						</div>
 					</div>

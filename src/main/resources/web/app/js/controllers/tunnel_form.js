@@ -5,8 +5,12 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
         lineNumbers: true,
         mode: 'application/json',
         styleActiveLine: true,
-        matchBrackets: true
+        matchBrackets: true,
+        indentUnit: 4
     };
+    
+    // set up error holder
+    $scope.status = {};
 	
     // common go back to tunnel screen
     $scope.returnToTunnels = function() {
@@ -139,6 +143,7 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
 	// reset to master copy
 	$scope.reset = function() {
 		$scope.bootstrap = angular.copy($scope.master);
+		$scope.tunnelInputForm.$setPristine();
     };	 
     
     // watch scope bootstrap.configuration.sourceInterface and
@@ -180,11 +185,8 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
     		message = response.message;    		
     	}
     	
-    	// set tunnel form error text
-    	$('#tunnelFormError').html('<h4>Oh no!</h4>' + message + '</p>');
-    	
-    	// show the error alert
-    	$('#tunnelFormError').show();
+    	// save message so that it can be shown in the ui
+    	$scope.status.alert = message;
     }
     
     // save
@@ -206,15 +208,15 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
     	}
     };
     
-    // force update shadow
-    $scope.forceShadow = function() {
-    	// wait just enough to let it show
-    	setTimeout(function() {
-	    	var updateThatChanges = new Date();
-	    	$scope.shadowForce = updateThatChanges.getTime();
-    	},20);
+    // create a function for manually refreshing the code editor
+    $scope.updateMirror = function() {
+    	setTimeout(function(){
+	    	if($scope.mirror) {
+	    		$scope.mirror.refresh();
+	    	}
+    	}, 100); // after 100ms
     };
-    
+        
     // make sure error is hidden
     $('#tunnelFormError').hide();
     
@@ -250,13 +252,35 @@ multiTunnelApp.directive('portCheck', function(Tunnel) {
         // start a new attempt with a delay to keep it from
         // getting too "chatty".
         scope.portCheckTimer = setTimeout(function(){
-        	var portResponse = Tunnel.available({tunnelPort: value}, {interfaceName: "0.0.0.0"}, function(data){
+        	// clear error status
+        	scope.status.inputTunnelSourcePort = null;
+        	
+        	var interfaceInput = "0.0.0.0";
+        	// if a valid interface is available use that
+        	if(scope.tunnelInputForm && scope.tunnelInputForm.inputTunnelSourceInterface && scope.tunnelInputForm.inputTunnelSourceInterface.$valid) {
+        		interfaceInput = scope.bootstrap.configuration.sourceInterface;
+        	} else if(scope.tunnelInputForm && scope.tunnelInputForm.inputTunnelSourceInterface && scope.tunnelInputForm.inputTunnelSourceInterface.$invalid) {
+        		// save port error
+        		scope.status.inputTunnelSourcePort = "A valid source interface is required to check the validity of a port";
+        		//set the validity of the field
+                ctrl.$setValidity('inputTunnelSourcePort', false);
+        		// can't submit with invalid interface
+        		return;
+        	}
+        	
+       	var portResponse = Tunnel.available({tunnelPort: value}, {interfaceName: interfaceInput}, function(data){
         		// default state is invalid
         		var valid = false;
         		// check that response is returned and is not "false" string
         		if(portResponse && portResponse.result && portResponse.result != "false") {
         			valid = true;
-        		}     
+        			scope.status.inputTunnelSourcePort = null; // clear errors
+        		} else {
+        			scope.status.inputTunnelSourcePort = "The provided port is not available or is currently in use.";
+        			if(value < 1024) {
+        				scope.status.inputTunnelSourcePort += "  Check that you have permissions to use this port.";
+        			}
+        		}
         		//set the validity of the field
                 ctrl.$setValidity('inputTunnelSourcePort', valid);
         	});
