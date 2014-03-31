@@ -143,7 +143,7 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
 	// reset to master copy
 	$scope.reset = function() {
 		$scope.bootstrap = angular.copy($scope.master);
-		$scope.tunnelInputForm.$setPristine();
+		$scope.tunnelForm.$setPristine();
     };	 
     
     // watch scope bootstrap.configuration.sourceInterface and
@@ -231,7 +231,7 @@ multiTunnelApp.directive('portCheck', function(Tunnel) {
     restrict: 'A',
     require: 'ngModel',
     link: function(scope, elem, attr, ctrl) { 
-      //when the scope changes, check the email.
+      // when the scope changes, check the port
       scope.$watch(attr.ngModel, function(value) {
     	// if value is null or not a number don't bother
     	if(!value) {
@@ -257,9 +257,9 @@ multiTunnelApp.directive('portCheck', function(Tunnel) {
         	
         	var interfaceInput = "0.0.0.0";
         	// if a valid interface is available use that
-        	if(scope.tunnelInputForm && scope.tunnelInputForm.inputTunnelSourceInterface && scope.tunnelInputForm.inputTunnelSourceInterface.$valid) {
+        	if(scope.tunnelForm && scope.tunnelForm.inputTunnelSourceInterface && scope.tunnelForm.inputTunnelSourceInterface.$valid) {
         		interfaceInput = scope.bootstrap.configuration.sourceInterface;
-        	} else if(scope.tunnelInputForm && scope.tunnelInputForm.inputTunnelSourceInterface && scope.tunnelInputForm.inputTunnelSourceInterface.$invalid) {
+        	} else if(scope.tunnelForm && scope.tunnelForm.inputTunnelSourceInterface && scope.tunnelForm.inputTunnelSourceInterface.$invalid) {
         		// save port error
         		scope.status.inputTunnelSourcePort = "A valid source interface is required to check the validity of a port";
         		//set the validity of the field
