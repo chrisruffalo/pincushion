@@ -1,4 +1,10 @@
 multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $routeParams, $timeout, $location, Tunnel) {
+	// set up text editor
+    $scope.editorOptions = {
+        lineWrapping : true,
+        lineNumbers: true,
+        mode: 'json',
+    };
 	
     // common go back to tunnel screen
     $scope.returnToTunnels = function() {
@@ -142,6 +148,25 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
     		$scope.bootstrap.configuration.sourceInterface = newValue.value;
     	}
     });
+    
+    // create shadow binding for json editor
+    $scope.$watch('modelJsonStringShadow', function(newValue, oldValue) {
+    	if(newValue != oldValue) {
+    		$scope.modelJsonStringShadow = newValue;
+    		try {
+    			$scope.bootstrap.configuration = JSON.parse(newValue);
+    		} catch (e) {
+    			// do nothing for now
+    		}
+    	}
+    });
+    
+    // create inverse for shadow binding
+    $scope.$watch('bootstrap.configuration', function(newValue, oldValue) {
+    	if(newValue != oldValue) {
+    		$scope.modelJsonStringShadow = JSON.stringify(newValue, null, 2);
+    	}
+    }, true);
     
     // what to do when an http error is returned
     $scope.onError = function(errorHttpResponse) {

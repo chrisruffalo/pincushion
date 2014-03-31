@@ -1,5 +1,12 @@
 // define the application
-var multiTunnelApp = angular.module('multiTunnelApp', ['ngResource','ngRoute','siyfion.sfTypeahead']);
+var multiTunnelApp = angular.module('multiTunnelApp', 
+	[
+	 'ngResource', 				// json/ajax services
+	 'ngRoute', 				// application url router
+	 'siyfion.sfTypeahead',		// typeahead widget integration
+	 'ui.codemirror'			// code mirror integration
+	]
+);
 
 // global routes for the application
 multiTunnelApp.config(['$routeProvider',

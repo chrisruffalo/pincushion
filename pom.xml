@@ -268,8 +268,8 @@
 		  					<includes>
 		  						<!-- main css -->
 		  						<include>app/css/main.css</include>
-		  						<!-- css for fontawesome -->
-		  						<include>thirdparty/css/font-awesome.min.css</include>
+		  						<!-- css for third party libraries/styling -->
+		  						<include>thirdparty/css/*.css</include>
 		  					</includes>
 		  				</aggregation>
 		  			
@@ -287,6 +287,7 @@
 							 	<include>thirdparty/js/jquery-2.1.0.min.js</include>
 							 	<include>thirdparty/js/bootstrap.min.js</include>
 							 	<include>thirdparty/js/typeahead.bundle.min.js</include>
+							 	<include>thirdparty/js/codemirror-json.min.js</include>
 							
 								<!-- load angular and angular modules -->
 								<include>thirdparty/js/angular.min.js</include>
