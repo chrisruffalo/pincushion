@@ -112,6 +112,9 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
 				// copy master from configuration
 				$scope.master = angular.copy($scope.bootstrap);
 
+				// copy original port
+				$scope.originalPort = angular.copy($scope.bootstrap.configuration.sourcePort);
+				
 				// init typeahead
 				$scope.typeaheadUpdate($scope.bootstrap);
 			}, 
@@ -120,6 +123,9 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
 		} else {
 			// bootstrap from default 
 			var localBootstrap = Tunnel.bootstrap(function() {
+				
+				// no original port value
+				$scope.originalPort = null;
 				
 				// get configuration
 				$scope.bootstrap = new Tunnel(localBootstrap);
@@ -231,29 +237,51 @@ multiTunnelApp.directive('portCheck', function(Tunnel) {
     restrict: 'A',
     require: 'ngModel',
     link: function(scope, elem, attr, ctrl) { 
+      // get form item id
+      var identifier = attr.name || attr.id;
+      
       // when the scope changes, check the port
-      scope.$watch(attr.ngModel, function(value) {
-    	// if value is null or not a number don't bother
-    	if(!value) {
-    		return;
-    	}
-    	
-    	// if the value is not a number just set invalid without remote check
-    	if(!util.isNumber(value)) {
-    		ctrl.$setValidity('inputTunnelSourcePort', false);
-    		return;
-    	}
-    	
-        // if there was a previous attempt, stop it.
+      scope.$watch(attr.ngModel, function(newValue, oldValue) {
+    	// if there was a previous attempt, stop it.
         if(scope.portCheckTimer) {
         	clearTimeout(scope.portCheckTimer);
         }
 
+        // if value is null or not a number don't bother
+    	if(!newValue) {
+    		return;
+    	}
+    	
+    	// if the value is not a number just set invalid without remote check
+    	if(!util.isNumber(newValue)) {
+        	scope.status[identifier] = "Port value should be a number between 1 and 65536.";
+    		ctrl.$setValidity(identifier, false);
+    		return;
+    	}
+    	        
+        // get original port from id
+        var originalPort = -1;
+        if(attr.originalPort) {
+      	  originalPort = scope.$eval(attr.originalPort);
+      	  if(originalPort && originalPort != "" && originalPort != "null" && util.isNumber(originalPort)) {
+      		  originalPort = parseFloat(originalPort);
+      	  }
+        }
+            	
+    	// don't complain if port is the original value
+    	if(originalPort && originalPort > 0) {
+    		if(newValue == originalPort) {
+            	scope.status[identifier] = null;
+    			ctrl.$setValidity(identifier, true);
+    			return;
+    		}
+    	}
+        
         // start a new attempt with a delay to keep it from
         // getting too "chatty".
         scope.portCheckTimer = setTimeout(function(){
         	// clear error status
-        	scope.status.inputTunnelSourcePort = null;
+        	scope.status[identifier] = null;
         	
         	var interfaceInput = "0.0.0.0";
         	// if a valid interface is available use that
@@ -261,28 +289,28 @@ multiTunnelApp.directive('portCheck', function(Tunnel) {
         		interfaceInput = scope.bootstrap.configuration.sourceInterface;
         	} else if(scope.tunnelForm && scope.tunnelForm.inputTunnelSourceInterface && scope.tunnelForm.inputTunnelSourceInterface.$invalid) {
         		// save port error
-        		scope.status.inputTunnelSourcePort = "A valid source interface is required to check the validity of a port";
+        		scope.status[identifier] = "A valid source interface is required to check the validity of a port";
         		//set the validity of the field
-                ctrl.$setValidity('inputTunnelSourcePort', false);
+                ctrl.$setValidity(identifier, false);
         		// can't submit with invalid interface
         		return;
         	}
         	
-       	var portResponse = Tunnel.available({tunnelPort: value}, {interfaceName: interfaceInput}, function(data){
+        	var portResponse = Tunnel.available({tunnelPort: newValue}, {interfaceName: interfaceInput}, function(data){
         		// default state is invalid
         		var valid = false;
         		// check that response is returned and is not "false" string
         		if(portResponse && portResponse.result && portResponse.result != "false") {
         			valid = true;
-        			scope.status.inputTunnelSourcePort = null; // clear errors
+        			scope.status[identifier] = null; // clear errors
         		} else {
-        			scope.status.inputTunnelSourcePort = "The provided port is not available or is currently in use.";
-        			if(value < 1024) {
-        				scope.status.inputTunnelSourcePort += "  Check that you have permissions to use this port.";
+        			scope.status[identifier] = "The provided port is not available or is currently in use.";
+        			if(newValue < 1024) {
+        				scope.status[identifier] += "  Check that you have permissions to use this port.";
         			}
         		}
         		//set the validity of the field
-                ctrl.$setValidity('inputTunnelSourcePort', valid);
+                ctrl.$setValidity(identifier, valid);
         	});
         }, 200);
       })

@@ -59,7 +59,7 @@
 								  <!-- tunnel bind interface -->
 								  <div class="form-group has-feedback" ng-class="{'has-error': tunnelForm.inputTunnelSourceInterface.$invalid && tunnelForm.inputTunnelSourceInterface.$dirty, 'has-success': tunnelForm.inputTunnelSourceInterface.$valid && tunnelForm.inputTunnelSourceInterface.$dirty}">
 								    <label for="inputTunnelSourceInterface" class="control-label">Bind Interface</label>
-									<input required sf-typeahead class="form-control" id="inputTunnelSourceInterface" name="inputTunnelSourceInterface" type="text" options="typeAheadOptions" datasets="suggestionSources" ng-model="bootstrap.configuration.sourceInterface" placeholder="0.0.0.0">
+									<input sf-typeahead class="form-control" id="inputTunnelSourceInterface" name="inputTunnelSourceInterface" type="text" options="typeAheadOptions" datasets="suggestionSources" ng-model="bootstrap.configuration.sourceInterface" placeholder="0.0.0.0">
 									<span ng-if="tunnelForm.inputTunnelSourceInterface.$dirty" ng-class="{'glyphicon-remove': tunnelForm.inputTunnelSourceInterface.$invalid && tunnelForm.inputTunnelSourceInterface.$dirty, 'glyphicon-ok': tunnelForm.inputTunnelSourceInterface.$valid && tunnelForm.inputTunnelSourceInterface.$dirty}" class="glyphicon form-control-feedback"></span>
 									<span class="help-block">The interface (physical, hostname, or address) that the tunnel will be bound to.  Ex: '127.0.0.1', 'localhost', '0.0.0.0'</span>
 								  </div>    
@@ -69,7 +69,7 @@
 								  <!-- tunnel source port -->
 								  <div class="form-group has-feedback" ng-class="{'has-error': tunnelForm.inputTunnelSourcePort.$invalid && tunnelForm.inputTunnelSourcePort.$dirty, 'has-success': tunnelForm.inputTunnelSourcePort.$valid && tunnelForm.inputTunnelSourcePort.$dirty}">
 								    <label for="inputTunnelSourcePort" class="control-label">Source Port</label>
-								    <input required type="text" class="form-control" name="inputTunnelSourcePort" id="inputTunnelSourcePort" port-check ng-model="bootstrap.configuration.sourcePort" placeholder="8080">
+								    <input required type="text" class="form-control" name="inputTunnelSourcePort" id="inputTunnelSourcePort" port-check ng-model="bootstrap.configuration.sourcePort" original-port="originalPort" placeholder="8080">
 								    <span ng-if="tunnelForm.inputTunnelSourcePort.$dirty" ng-class="{'glyphicon-remove': tunnelForm.inputTunnelSourcePort.$invalid && tunnelForm.inputTunnelSourcePort.$dirty, 'glyphicon-ok': tunnelForm.inputTunnelSourcePort.$valid && tunnelForm.inputTunnelSourcePort.$dirty}" class="glyphicon form-control-feedback"></span>
 								    <span ng-if="tunnelForm.inputTunnelSourcePort.$pristine || tunnelForm.inputTunnelSourcePort.$valid" class="help-block">The port, between 1 and 65536, that the tunnel should bind to.  Ports less than or equal to 1024 require special permissions on some operating systems.</span>
 								    <span ng-if="status.inputTunnelSourcePort" class="help-block text-danger">{{status.inputTunnelSourcePort}}</span>
@@ -125,7 +125,7 @@
 			<div class="form-group">
 			  <div class="col-sm-2">
 			    <button type="submit" ng-disabled="tunnelForm.$pristine" ng-class="{'disabled': tunnelForm.$pristine}" ng-click="reset()" class="btn btn-default">reset</button>
-			    <button type="submit" ng-disabled="tunnelForm.$invalid" ng-class="{'disabled': tunnelForm.$invalid}" ng-click="save(bootstrap.configuration)" class="btn btn-primary">save</button>
+			    <button type="submit" ng-disabled="tunnelForm.$invalid || tunnelForm.$pristine" ng-class="{'disabled': tunnelForm.$invalid || tunnelForm.$pristine}" ng-click="save(bootstrap.configuration)" class="btn btn-primary">save</button>
 			  </div>
 			  <div class="col-sm-offset-1 col-sm-1">
 			    <!-- do nothing and return -->
