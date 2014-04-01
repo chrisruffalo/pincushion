@@ -1,8 +1,6 @@
 package com.github.chrisruffalo.pincushion.web.rest.services;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -19,8 +17,6 @@ import com.github.chrisruffalo.pincushion.model.tunnel.TunnelBootstrap;
 import com.github.chrisruffalo.pincushion.model.tunnel.TunnelConfiguration;
 import com.github.chrisruffalo.pincushion.model.tunnel.TunnelReference;
 import com.github.chrisruffalo.pincushion.tunnel.TunnelManager;
-import com.github.chrisruffalo.pincushion.util.InterfaceHelper;
-import com.github.chrisruffalo.pincushion.util.PortHelper;
 
 @Path("/tunnel")
 @Produces(MediaType.APPLICATION_JSON)
@@ -32,6 +28,7 @@ public class TunnelManagementService {
 	public TunnelManagementService(@Context TunnelManager manager) {
 		this.manager = manager;
 	}
+	
 	@Path("/info")
 	@GET
 	public List<TunnelReference> info() {
@@ -48,23 +45,6 @@ public class TunnelManagementService {
 	@GET
 	public TunnelReference getTunnelById(@PathParam("id") String id) {
 		return this.manager.get(id);
-	}
-	
-	@Path("/{port}/available")
-	@POST
-	public Map<String, String> getPortAvailable(@PathParam("port") Integer port, Map<String, String> values) {
-		// get interface
-		String interfaceName = values.get("interfaceName");
-		if(interfaceName == null || interfaceName.isEmpty()) {
-			interfaceName = "0.0.0.0";
-		}		
-		interfaceName = InterfaceHelper.INSTANCE.sanitize(interfaceName);
-		
-		// check availability
-		boolean result = PortHelper.INSTANCE.available(interfaceName, port);
-		Map<String,String> message = new HashMap<String, String>();
-		message.put("result", String.valueOf(result));
-		return message;
 	}
 	
 	@Path("/{id}/bootstrap")

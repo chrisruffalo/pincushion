@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.ws.rs.core.Application;
 
 import com.github.chrisruffalo.pincushion.web.rest.services.InfoService;
+import com.github.chrisruffalo.pincushion.web.rest.services.NetworkService;
 import com.github.chrisruffalo.pincushion.web.rest.services.TunnelManagementService;
 
 public class ManagementApplication extends Application {
@@ -19,6 +20,7 @@ public class ManagementApplication extends Application {
 		this.types = new HashSet<>();
 		this.types.add(InfoService.class);
 		this.types.add(TunnelManagementService.class);
+		this.types.add(NetworkService.class);
 
 		// create singletons
 		this.singletons = new HashSet<>();

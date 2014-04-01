@@ -232,7 +232,6 @@ multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $
 
 // directive for validating ports (example from: http://stackoverflow.com/a/12865401/128339)
 multiTunnelApp.directive('portCheck', function(Tunnel) {
-  var toId;
   return {
     restrict: 'A',
     require: 'ngModel',
@@ -240,7 +239,7 @@ multiTunnelApp.directive('portCheck', function(Tunnel) {
       // get form item id
       var identifier = attr.name || attr.id;
       
-      // when the scope changes, check the port
+      // when the port changes, check the port
       scope.$watch(attr.ngModel, function(newValue, oldValue) {
     	// if there was a previous attempt, stop it.
         if(scope.portCheckTimer) {
@@ -276,26 +275,32 @@ multiTunnelApp.directive('portCheck', function(Tunnel) {
     			return;
     		}
     	}
+    	
+    	// look up interface from form value
+    	var interfaceInput = "0.0.0.0";
+    	if(attr.checkInterface) {
+    		var attrInterface = scope.$eval(attr.checkInterface);
+    		if(attrInterface != null) {
+    			interfaceInput = attrInterface;
+    		}
+    	}
+    	
+    	// complain if a bad/null interface is somehow given
+    	if(!attrInterface) {
+    		// save port error
+    		scope.status[identifier] = "A valid source interface is required to check the validity of a port";
+    		//set the validity of the field
+            ctrl.$setValidity(identifier, false);
+    		// can't submit with invalid interface
+    		return;
+    	}
         
         // start a new attempt with a delay to keep it from
         // getting too "chatty".
         scope.portCheckTimer = setTimeout(function(){
         	// clear error status
-        	scope.status[identifier] = null;
-        	
-        	var interfaceInput = "0.0.0.0";
-        	// if a valid interface is available use that
-        	if(scope.tunnelForm && scope.tunnelForm.inputTunnelSourceInterface && scope.tunnelForm.inputTunnelSourceInterface.$valid) {
-        		interfaceInput = scope.bootstrap.configuration.sourceInterface;
-        	} else if(scope.tunnelForm && scope.tunnelForm.inputTunnelSourceInterface && scope.tunnelForm.inputTunnelSourceInterface.$invalid) {
-        		// save port error
-        		scope.status[identifier] = "A valid source interface is required to check the validity of a port";
-        		//set the validity of the field
-                ctrl.$setValidity(identifier, false);
-        		// can't submit with invalid interface
-        		return;
-        	}
-        	
+        	scope.status[identifier] = null;       	
+        	// get validity response from server
         	var portResponse = Tunnel.available({tunnelPort: newValue}, {interfaceName: interfaceInput}, function(data){
         		// default state is invalid
         		var valid = false;
@@ -312,7 +317,54 @@ multiTunnelApp.directive('portCheck', function(Tunnel) {
         		//set the validity of the field
                 ctrl.$setValidity(identifier, valid);
         	});
-        }, 200);
+        }, 400);
+      })
+    }
+  }
+});
+
+//directive for validating interfaces
+multiTunnelApp.directive('interfaceCheck', function(Tunnel) {
+  return {
+    restrict: 'A',
+    require: 'ngModel',
+    link: function(scope, elem, attr, ctrl) { 
+      // get form item id
+      var identifier = attr.name || attr.id;
+
+      // when the interface changes, check the interface
+      scope.$watch(attr.ngModel, function(newValue, oldValue) {
+    	// if there was a previous attempt, stop it.
+        if(scope.interfaceCheckTimer) {
+        	clearTimeout(scope.interfaceCheckTimer);
+        }
+        
+        if(!newValue) {
+        	// clear error status
+        	scope.status[identifier] = null;       	
+        	return;
+        }
+        
+        // start a new attempt with a delay to keep it from
+        // getting too "chatty".
+        scope.interfaceCheckTimer = setTimeout(function(){
+        	// get validity response from server
+        	var portResponse = Tunnel.checkInterface({}, {interfaceName: newValue}, function(data){
+        		
+        		if(!portResponse) {
+        			return;
+        		}
+        		
+        		// make status empty
+        		scope.status[identifier] = {};
+        		
+        		// add messages/error status, etc
+        		if(portResponse.message) {
+        			scope.status[identifier].message = portResponse.message;
+        			console.log("got response message: " + portResponse.message);
+        		}
+        	});
+        }, 400);
       })
     }
   }
