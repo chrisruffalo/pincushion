@@ -11,6 +11,8 @@ public class TunnelConfiguration {
 	private String destHost;
 	
 	private Integer destPort;
+	
+	private String description;
 
 	public TunnelConfiguration() {
 		this.sourceInterface = "0.0.0.0";
@@ -55,5 +57,13 @@ public class TunnelConfiguration {
 	public void setDestPort(Integer destPort) {
 		this.destPort = destPort;
 	}
-	
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+		
 }

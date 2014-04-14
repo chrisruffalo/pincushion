@@ -22,6 +22,7 @@
 		<ul class="nav nav-tabs">
 		  <li class="active"><a data-target="#tunnel" data-toggle="tab">Tunnel</a></li>
 		  <li><a data-target="#code" ng-click="updateMirror()" data-toggle="tab">Raw Code</a></li>
+		  <li><a data-target="#history" ng-if="bootstrap.history && bootstrap.history.length > 0">History</a>
 		</ul>
 	</div>
 </div>
@@ -99,7 +100,17 @@
 							    <span class="help-block" style="display: block;">The port (Ex: 80 for HTTP traffic) on the destination address that the traffic should be forwarded to.  (The value should be between 1 and 65536.)</span>
 							  </div>	
 						  	</div>
-						  </div>	  
+						  </div>
+						  
+						  <!-- details/description -->	  
+						  <div class="row">
+						  	<div class="col-sm-10">
+						  		 <div class="form-group">
+						  		 	<label for="inputTunnelDescription" class="control-label">Description</label>
+						  		 	<textarea class="form-control" ng-model="bootstrap.configuration.description" placeholder="It helps other users if a description of the tunnel is provided."></textarea>
+						  		 </div>						  		 
+						  	</div>
+						  </div>
 						</div>
 					</div>
 				</div>
@@ -112,6 +123,38 @@
 						  <div class="form-group">
 					  		<textarea ui-codemirror="editorOptions" ng-model="modelJsonStringShadow"></textarea>
 						  </div>
+						</div>
+					</div>
+				</div>
+				
+				<!-- pane for history -->
+				<div class="tab-pane" id="code" ng-if="bootstrap.history && bootstrap.history.length > 0">
+					<div class="row" >
+						<!-- make history items available -->
+						<div class="col-sm-offset-1 col-sm-10">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th><!-- spacer --></th>
+										<th>name</th>
+										<th>last active date</th>
+										<th><!-- controls --></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="historyItem in bootstrap.history">
+										<!-- spacer -->
+										<td>&nbsp;</td>
+										<!-- info -->
+										<td>{{historyItem.name}}</td>
+										<td>{{historyItem.lastActive}}</td>
+										<!-- controls -->
+										<td>
+											
+										</td>
+									</tr>
+								</tbody>
+							</table>							
 						</div>
 					</div>
 				</div>

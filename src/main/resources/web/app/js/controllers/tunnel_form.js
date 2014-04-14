@@ -1,4 +1,4 @@
-multiTunnelApp.controller('TunnelFormController', function ($scope, $resource, $routeParams, $timeout, $location, Tunnel) {
+multiTunnelApp.controller('TunnelFormController', function ($scope, $routeParams, $timeout, $location, Tunnel) {
 	// set up text editor
     $scope.editorOptions = {
         lineWrapping : false,

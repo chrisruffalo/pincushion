@@ -356,7 +356,62 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>				
+			</plugin>		
+			
+			<!-- run jasmine to test javascript resources -->
+			<plugin>
+				<groupId>com.github.searls</groupId>
+				<artifactId>jasmine-maven-plugin</artifactId>
+				<version>1.3.1.4</version>
+				<executions>
+					<!-- 
+					<execution>
+						<id>jasmine-test</id>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+					-->
+				</executions>
+				<configuration>
+					<!-- configuration -->
+					<haltOnFailure>false</haltOnFailure>
+				
+					<!-- thirdparty sources -->
+					<preloadSources>
+						<!-- <source>${project.basedir}/src/main/resources/web/thirdparty/js/jquery-2.1.0.min.js</source> -->
+						<source>${project.basedir}/src/main/resources/web/thirdparty/js/bootstrap.min.js</source>
+						<source>${project.basedir}/src/main/resources/web/thirdparty/js/codemirror-json.min.js</source>
+						<source>${project.basedir}/src/main/resources/web/thirdparty/js/typeahead.bundle.min.js</source>
+						<source>${project.basedir}/src/main/resources/web/thirdparty/js/jquery-2.1.0.min.js</source>
+						<source>${project.basedir}/src/main/resources/web/thirdparty/js/angular.min.js</source>
+						<source>${project.basedir}/src/main/resources/web/thirdparty/js/angular-resource.min.js</source>
+						<source>${project.basedir}/src/main/resources/web/thirdparty/js/angular-route.min.js</source>
+						<source>${project.basedir}/src/main/resources/web/thirdparty/js/angular-typeahead.min.js</source>
+						<source>${project.basedir}/src/main/resources/web/thirdparty/js/angular-ui-codemirror.js</source>
+					</preloadSources>
+
+					<!-- application script -->
+					<jsSrcDir>src/main/resources/web/js/**/*.js</jsSrcDir>
+					
+					<!-- test directory -->
+					<jsTestSrcDir>src/test/resources/jasmine</jsTestSrcDir>
+					
+					<!-- load only Spec files -->
+					<specIncludes>
+						<include>*Spec.js</include>
+					</specIncludes>
+				</configuration>
+				
+				<dependencies>
+					<dependency>
+					    <groupId>net.sourceforge.htmlunit</groupId>
+					    <artifactId>htmlunit</artifactId>
+					    <version>2.14</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+					
 		</plugins>	
 	
 		<pluginManagement>
