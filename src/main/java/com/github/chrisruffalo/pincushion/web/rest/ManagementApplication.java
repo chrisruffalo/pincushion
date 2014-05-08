@@ -21,7 +21,7 @@ public class ManagementApplication extends Application {
 		this.types.add(InfoService.class);
 		this.types.add(TunnelManagementService.class);
 		this.types.add(NetworkService.class);
-
+		
 		// create singletons
 		this.singletons = new HashSet<>();
 	}

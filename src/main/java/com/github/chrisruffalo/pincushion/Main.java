@@ -27,7 +27,7 @@ import com.github.chrisruffalo.pincushion.tunnel.TunnelManager;
 import com.github.chrisruffalo.pincushion.util.ApplicationProperties;
 import com.github.chrisruffalo.pincushion.util.InterfaceHelper;
 import com.github.chrisruffalo.pincushion.util.PathUtil;
-import com.github.chrisruffalo.pincushion.web.ManagementServer;
+import com.github.chrisruffalo.pincushion.web.UndertowManagementInterface;
 
 public class Main {
 
@@ -160,7 +160,7 @@ public class Main {
 		}
 
 		// create tunnel manager
-		TunnelManager manager = new TunnelManager(tunnelFileManager, eventGroup);
+		TunnelManager tunnelManager = new TunnelManager(tunnelFileManager, eventGroup);
 
 		// only start if some tunnel configuration objects exist
 		if(configurations != null && !configurations.isEmpty()) {
@@ -189,14 +189,15 @@ public class Main {
 				}
 				
 				// pass to the manager to create
-				manager.create(configuration);
+				tunnelManager.create(configuration);
 			}
 		} else {
 			// empty configuration list
 			configurations = new LinkedList<>();
 		}
 		
-		ManagementServer server = new ManagementServer(manager, eventGroup, config);
+		// start management interface
+		UndertowManagementInterface server = new UndertowManagementInterface(tunnelManager, config);
 		server.start();
 			
 		// and wait

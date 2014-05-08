@@ -20,7 +20,7 @@
 		<logback.version>1.1.1</logback.version>
 		<guava.version>15.0-rc1</guava.version>
 		<junit.version>4.11</junit.version>
-		<resteasy.version>3.0.6.Final</resteasy.version>
+		<resteasy.version>3.0.8.Final</resteasy.version>
 		
 		<!-- using alpha for better channel adapters and for executors -->
 		<netty.version>5.0.0.Alpha1</netty.version>
@@ -43,23 +43,14 @@
 		    <artifactId>netty-all</artifactId>
 		    <version>${netty.version}</version>
 		</dependency>
+	
+		<!-- undertow -->
+		<dependency>
+		    <groupId>io.undertow</groupId>
+		    <artifactId>undertow-servlet</artifactId>
+		    <version>1.0.9.Final</version>
+		</dependency>
 		
-		<!-- jetty for management server -->
-		<dependency>
-		    <groupId>org.eclipse.jetty</groupId>
-		    <artifactId>jetty-server</artifactId>
-		    <version>${jetty.version}</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.eclipse.jetty</groupId>
-		    <artifactId>jetty-servlets</artifactId>
-		    <version>${jetty.version}</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.eclipse.jetty</groupId>
-		    <artifactId>jetty-webapp</artifactId>
-		    <version>${jetty.version}</version>
-		</dependency>
 				
 		<!-- resteasy services on jetty -->
 		<dependency>
@@ -81,6 +72,10 @@
 		    	<exclusion>
 		    		<artifactId>javassist</artifactId>
 		    		<groupId>javassist</groupId>
+		    	</exclusion>
+		    	<exclusion>
+		    		<artifactId>jboss-annotations-api_1.1_spec</artifactId>
+		    		<groupId>org.jboss.spec.javax.annotation</groupId>
 		    	</exclusion>
 		    </exclusions>
 		</dependency>
@@ -124,7 +119,7 @@
 			<artifactId>jython-standalone</artifactId>
 			<version>2.7-b1</version>
 		</dependency>            
-
+		
 		<!-- testing/junit -->
 		<dependency>
 			<groupId>junit</groupId>
