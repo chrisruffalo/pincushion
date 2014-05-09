@@ -61,10 +61,9 @@ public class TunnelManagementService {
 	
 	@Path("/{id}/remove")
 	@DELETE
-	@Produces(MediaType.TEXT_PLAIN)
-	public boolean removeTunnelById(@PathParam("id") String id) {
+	public List<TunnelReference> removeTunnelById(@PathParam("id") String id) {
 		this.manager.delete(id);
-		return true;
+		return this.info();
 	}
 	
 	@Path("/{id}/pause")

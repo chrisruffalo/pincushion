@@ -5,6 +5,10 @@ import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.PathHandler;
+import io.undertow.server.handlers.encoding.ContentEncodingRepository;
+import io.undertow.server.handlers.encoding.DeflateEncodingProvider;
+import io.undertow.server.handlers.encoding.EncodingHandler;
+import io.undertow.server.handlers.encoding.GzipEncodingProvider;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 import io.undertow.servlet.Servlets;
@@ -25,7 +29,7 @@ import com.github.chrisruffalo.pincushion.tunnel.TunnelManager;
 import com.github.chrisruffalo.pincushion.web.rest.ManagementApplication;
 import com.github.chrisruffalo.pincushion.web.support.ResteasyBootstrapInstanceFactory;
 
-public class UndertowManagementInterface {
+public class ManagementInterface {
 
 	private final String managementInterface;
 	
@@ -37,7 +41,7 @@ public class UndertowManagementInterface {
 	
 	private Undertow server;
 	
-	public UndertowManagementInterface(TunnelManager manager, PincushionConfiguration config) {
+	public ManagementInterface(TunnelManager manager, PincushionConfiguration config) {
 		this.managementInterface = config.getManagementInterface();
 		this.managementPort = config.getManagementPort();
 		
@@ -90,17 +94,25 @@ public class UndertowManagementInterface {
 		} catch (ServletException e) {
 			this.logger.error("Could not start services deployment: {}", e.getLocalizedMessage());
 		}
-		
-		//Handlers.
-		
+
 		// create paths
 		PathHandler path = Handlers.path(resources);
 		if(services != null) {
 			path.addPrefixPath("/services", services);
 		}
 		
+		// create encoding repository
+		ContentEncodingRepository repo = new ContentEncodingRepository();
+
+        // permit gzip and deflate
+		repo.addEncodingHandler("gzip", new GzipEncodingProvider(), 1000);
+		repo.addEncodingHandler("deflate", new DeflateEncodingProvider(), 10);
+		
+		// ensure that everything can be encoded with appropriate compression
+		EncodingHandler encoder = new EncodingHandler(path, repo);
+		
 		// add path handler to server
-		builder.setHandler(path);
+		builder.setHandler(encoder);
 		
 		// start undertow server
 		this.server = builder.build();

@@ -61,7 +61,7 @@
 								<i class="fa fa-arrow-down"></i>
 							</span>
 						</td>
-						<td>
+						<td class="text-right">
 							<button ng-click="edit(tunnel.id)" class="btn btn-sm btn-default"><i class="fa fa-pencil"></i></button>
 							<button ng-if="tunnel.status == 'PAUSED'" ng-click="resume(tunnel)" class="btn btn-sm btn-default"><i class="fa fa-play"></i></button>
 							<button ng-if="tunnel.status == 'RUNNING'" ng-click="pause(tunnel)" class="btn btn-sm btn-default"><i class="fa fa-pause"></i></button>

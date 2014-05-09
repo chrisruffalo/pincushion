@@ -25,9 +25,21 @@
 		<!-- using alpha for better channel adapters and for executors -->
 		<netty.version>5.0.0.Alpha1</netty.version>
 		
-		<!-- jetty -->
-		<jetty.version>9.1.3.v20140225</jetty.version>
+	    <!-- undertow -->
+	    <undertow.version>1.0.9.Final</undertow.version>
+	   
+	    <!-- timesetamp magic / property replacement -->
+        <maven.build.timestamp.format>yyyy/MM/dd - hh:mm:ss a (Z)</maven.build.timestamp.format>
+        <pincushion.build.timestamp>${maven.build.timestamp}</pincushion.build.timestamp>
+                        
+        <!-- release version (so it can be overriden for full-release builds) -->
+        <pincushion.release>${project.version}-git-${buildNumber}</pincushion.release>
 	</properties>
+	
+	<!-- scm information for buildnumber plugin -->
+    <scm>
+        <connection>scm:git:https://github.com/chrisruffalo/pincushion.git</connection>
+    </scm>
 	
 	<dependencies>
 		<!-- logging impl -->
@@ -48,9 +60,8 @@
 		<dependency>
 		    <groupId>io.undertow</groupId>
 		    <artifactId>undertow-servlet</artifactId>
-		    <version>1.0.9.Final</version>
-		</dependency>
-		
+		    <version>${undertow.version}</version>
+		</dependency>		
 				
 		<!-- resteasy services on jetty -->
 		<dependency>
@@ -150,6 +161,28 @@
 		</resources>
 
 		<plugins>
+            <!-- SCM Revision for use in build -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- use only the first 5 characters of the git revision -->
+                    <shortRevisionLength>5</shortRevisionLength>
+                    <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
+                </configuration>
+            </plugin>
+		
 			<!-- execute test coverage -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -195,44 +228,6 @@
 			    </executions>
 			</plugin>
 			
-			<!-- gzip individual files -->
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-			  	<version>1.7</version>
-			  	<executions>
-			    	<execution>
-			      		<phase>process-resources</phase>
-			      		<configuration>
-			        		<target>
-			        			<!-- gzip main index file -->
-								<gzip src="${project.build.directory}/classes/web/index.html" destfile="${project.build.directory}/classes/web/index.html.gz"/>
-								
-								<!-- gzip template html files -->
-								<gzip src="${project.build.directory}/classes/web/templates/module_add.html" destfile="${project.build.directory}/classes/web/templates/module_add.html.gz"/>
-								<gzip src="${project.build.directory}/classes/web/templates/module_details.html" destfile="${project.build.directory}/classes/web/templates/module_details.html.gz"/>
-								<gzip src="${project.build.directory}/classes/web/templates/modules.html" destfile="${project.build.directory}/classes/web/templates/modules.html.gz"/>
-								<gzip src="${project.build.directory}/classes/web/templates/tunnel_form.html" destfile="${project.build.directory}/classes/web/templates/tunnel_form.html.gz"/>
-								<gzip src="${project.build.directory}/classes/web/templates/tunnels.html" destfile="${project.build.directory}/classes/web/templates/tunnels.html.gz"/>
-								
-								<!-- gzip font files -->
-								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.eot" destfile="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.eot.gz"/>
-								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.svg" destfile="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.svg.gz"/>
-								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.ttf" destfile="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.ttf.gz"/>
-								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.woff" destfile="${project.build.directory}/classes/web/thirdparty/fonts/fontawesome-webfont.woff.gz"/>
-								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/FontAwesome.otf" destfile="${project.build.directory}/classes/web/thirdparty/fonts/FontAwesome.otf.gz"/>
-								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.eot" destfile="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.eot.gz"/>
-								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.svg" destfile="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.svg.gz"/>
-								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.ttf" destfile="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.ttf.gz"/>
-								<gzip src="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.woff" destfile="${project.build.directory}/classes/web/thirdparty/fonts/glyphicons-halflings-regular.woff.gz"/>
-			        		</target>
-			      		</configuration>
-			      		<goals>
-			        		<goal>run</goal>
-			      		</goals>
-		    		</execution>
-		  		</executions>
-			</plugin>
-			
 			<!-- compress javascript resources -->
 			<plugin>
 				<groupId>net.alchim31.maven</groupId>
@@ -249,7 +244,6 @@
 					<jswarn>false</jswarn>
 					<nomunge>true</nomunge>
 			  		<nosuffix>true</nosuffix>
-			  		<gzip>true</gzip>
 		  			<aggregations>
 		  				<!-- css aggregation -->
 		  				<aggregation>
@@ -302,7 +296,7 @@
 							</includes>
 			      		</aggregation>
 			    	</aggregations>
-			    	<!-- don't compress/minify/obfuscate anything, just aggregate and gzip -->
+			    	<!-- don't compress/minify/obfuscate anything, just aggregate -->
 			    	<excludes>
 			    		<exclude>**/less/*</exclude>
 						<exclude>**/*.js</exclude>
@@ -338,6 +332,12 @@
 								    	<exclude>org/xml/sax/**</exclude>
 								    	<exclude>org/apache/xmlcommons/**</exclude>
 								  	</excludes>
+								</filter>
+								<filter>
+								    <artifact>org.jboss.resteasy:jaxrs-api</artifact>
+								    <excludes>
+								        <exclude>javax/annotation/Priority</exclude>
+								    </excludes>
 								</filter>
                 			</filters>						
 							<transformers>

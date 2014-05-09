@@ -34,7 +34,10 @@ multiTunnelApp.controller('TunnelTableController', function ($scope, $resource, 
 		$scope.pauseRefresh();
 		
 		// update table after remove 
-		tunnel.$remove($scope.updateTable);
+		var localTunnels = tunnel.$remove(function(){
+			$scope.tunnels = localTunnels;
+		    $scope.startRefresh();
+		});
 	}
 
 	$scope.pause = function(tunnel) {
@@ -80,7 +83,7 @@ multiTunnelApp.controller('TunnelTableController', function ($scope, $resource, 
 	    	function(){
 	    		$scope.updateTable();
 	    	}
-	    	, 2000 // 2 seconds
+	    	, 5000 // 2 seconds
 	    )
 	}
 	

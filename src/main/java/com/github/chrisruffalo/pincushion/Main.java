@@ -27,7 +27,7 @@ import com.github.chrisruffalo.pincushion.tunnel.TunnelManager;
 import com.github.chrisruffalo.pincushion.util.ApplicationProperties;
 import com.github.chrisruffalo.pincushion.util.InterfaceHelper;
 import com.github.chrisruffalo.pincushion.util.PathUtil;
-import com.github.chrisruffalo.pincushion.web.UndertowManagementInterface;
+import com.github.chrisruffalo.pincushion.web.ManagementInterface;
 
 public class Main {
 
@@ -197,7 +197,7 @@ public class Main {
 		}
 		
 		// start management interface
-		UndertowManagementInterface server = new UndertowManagementInterface(tunnelManager, config);
+		ManagementInterface server = new ManagementInterface(tunnelManager, config);
 		server.start();
 			
 		// and wait

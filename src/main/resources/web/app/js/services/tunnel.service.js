@@ -17,7 +17,7 @@ multiTunnelApp.factory("Tunnel", function ($resource) {
 				'update': {method:'PUT', url: 'services/tunnel/:tunnelId/update', params: {tunnelId:""}},		
 				'pause':  {method:'POST', url: 'services/tunnel/:tunnelId/pause', params: {tunnelId:"@id"}},
 				'resume': {method:'POST', url: 'services/tunnel/:tunnelId/resume', params: {tunnelId:"@id"}},
-				'remove': {method:'DELETE', url: 'services/tunnel/:tunnelId/remove', params: {tunnelId:"@id"}}
+				'remove': {method:'DELETE', isArray:true, url: 'services/tunnel/:tunnelId/remove', params: {tunnelId:"@id"}}
     		}
     );    
 });
