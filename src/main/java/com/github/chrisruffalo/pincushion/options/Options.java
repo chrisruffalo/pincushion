@@ -24,7 +24,7 @@ public class Options {
 	@Parameter(names = {"--configuration", "-c"}, description="JSON formatted configuration file.")
 	private File configurationFile;
 	
-	@Parameter(names = {"--example", "-e"}, description="Create an example configuration at 'multi-tunnel.configuration.example' and exit.")
+	@Parameter(names = {"--example", "-e"}, description="Create an example configuration at 'pincushion.configuration.example' and exit.")
 	private boolean createExample;
 	
 	public Options() {
@@ -33,7 +33,7 @@ public class Options {
 		this.createExample = false;
 		
 		// default
-		this.configurationFile = new File("multi-tunnel.configuration");
+		this.configurationFile = new File("./pincushion.configuration");
 		
 		// empty tunnel
 		this.tunnels = new LinkedList<>();

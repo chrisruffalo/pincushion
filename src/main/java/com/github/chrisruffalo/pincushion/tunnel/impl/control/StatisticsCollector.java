@@ -6,34 +6,40 @@ import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import com.github.chrisruffalo.pincushion.model.tunnel.TunnelStatistics;
 
 @Sharable
 public class StatisticsCollector extends ChannelHandlerAdapter {
 
-	private AtomicInteger activeConnections;
+    private static final AtomicIntegerFieldUpdater<StatisticsCollector> AC_UPDATER = AtomicIntegerFieldUpdater.newUpdater(StatisticsCollector.class, "activeConnections");
+    private static final AtomicIntegerFieldUpdater<StatisticsCollector> TC_UPDATER = AtomicIntegerFieldUpdater.newUpdater(StatisticsCollector.class, "totalConnections");
+    
+    private static final AtomicLongFieldUpdater<StatisticsCollector> READ_UPDATER = AtomicLongFieldUpdater.newUpdater(StatisticsCollector.class, "bytesRead");
+    private static final AtomicLongFieldUpdater<StatisticsCollector> RECD_UPDATER = AtomicLongFieldUpdater.newUpdater(StatisticsCollector.class, "bytesReturned");
+    
+	private volatile int activeConnections;
 	
-	private AtomicInteger totalConnections;
+	private volatile int totalConnections;
 
-	private AtomicLong bytesRead;
+	private volatile long bytesRead;
 	
-	private AtomicLong bytesReturned;
+	private volatile long bytesReturned;
 	
 	public StatisticsCollector() {
-		this.activeConnections = new AtomicInteger(0);
-		this.totalConnections = new AtomicInteger(0);
+		this.activeConnections = 0;
+		this.totalConnections = 0;
 		
-		this.bytesRead = new AtomicLong(0);
-		this.bytesReturned = new AtomicLong(0);
+		this.bytesRead = 0;
+		this.bytesReturned = 0;
 	}
 	
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		this.activeConnections.incrementAndGet();
-		this.totalConnections.incrementAndGet();
+		AC_UPDATER.incrementAndGet(this);
+		TC_UPDATER.incrementAndGet(this);
 		
 		super.channelActive(ctx);
 	}
@@ -42,7 +48,8 @@ public class StatisticsCollector extends ChannelHandlerAdapter {
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
 		if(msg instanceof ByteBuf) {
-			this.bytesRead.addAndGet(((ByteBuf)msg).readableBytes());
+		    final int localBytesRead = ((ByteBuf)msg).readableBytes();
+			READ_UPDATER.addAndGet(this, localBytesRead);
 		}
 		
 		super.channelRead(ctx, msg);
@@ -52,7 +59,8 @@ public class StatisticsCollector extends ChannelHandlerAdapter {
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
 
 		if(msg instanceof ByteBuf) {
-			this.bytesReturned.addAndGet(((ByteBuf)msg).readableBytes());
+		    final int localBytesReturned = ((ByteBuf)msg).readableBytes();
+			RECD_UPDATER.addAndGet(this, localBytesReturned);
 		}
 		
 		super.write(ctx, msg, promise);
@@ -60,22 +68,54 @@ public class StatisticsCollector extends ChannelHandlerAdapter {
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		this.activeConnections.decrementAndGet();
+		AC_UPDATER.decrementAndGet(this);
 		
 		super.channelInactive(ctx);
 	}
 
 	public TunnelStatistics collect() {
-		TunnelStatistics stats = new TunnelStatistics();
+		final TunnelStatistics stats = new TunnelStatistics();
 		
 		// get connections
-		stats.setActiveConnections(this.activeConnections.intValue());
-		stats.setTotalConnections(this.totalConnections.intValue());
+		stats.setActiveConnections(activeConnections);
+		stats.setTotalConnections(totalConnections);
 		
 		// get bytes
-		stats.setRead(this.bytesRead.longValue());
-		stats.setReturned(this.bytesReturned.longValue());
+		stats.setRead(bytesRead);
+		stats.setReturned(bytesReturned);
 		
 		return stats;
 	}
+
+    public int getActiveConnections() {
+        return activeConnections;
+    }
+
+    public void setActiveConnections(int activeConnections) {
+        this.activeConnections = activeConnections;
+    }
+
+    public int getTotalConnections() {
+        return totalConnections;
+    }
+
+    public void setTotalConnections(int totalConnections) {
+        this.totalConnections = totalConnections;
+    }
+
+    public long getBytesRead() {
+        return bytesRead;
+    }
+
+    public void setBytesRead(long bytesRead) {
+        this.bytesRead = bytesRead;
+    }
+
+    public long getBytesReturned() {
+        return bytesReturned;
+    }
+
+    public void setBytesReturned(long bytesReturned) {
+        this.bytesReturned = bytesReturned;
+    }
 }

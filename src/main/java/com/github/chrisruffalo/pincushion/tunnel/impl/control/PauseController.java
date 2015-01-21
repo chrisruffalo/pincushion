@@ -6,22 +6,24 @@ import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 @Sharable
 public class PauseController extends ChannelHandlerAdapter {
 
-	private AtomicBoolean paused;
+    private static final AtomicIntegerFieldUpdater<PauseController> PAUSE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(PauseController.class, "paused");
+    
+	private volatile int paused;
 	
 	public PauseController() {
-		this.paused = new AtomicBoolean(false);
+		this.paused = 0;
 	}
 	
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
 		// if paused
-		if(this.paused.get()) {
+		if(PAUSE_UPDATER.get(this) > 0) {
 			// release
 			if(msg instanceof ByteBuf) {
 				((ByteBuf) msg).discardReadBytes();
@@ -44,7 +46,14 @@ public class PauseController extends ChannelHandlerAdapter {
 	 * @param shouldPause true to pause, false to unpause
 	 */
 	public void pause(boolean shouldPause) {
-		this.paused.lazySet(shouldPause);
+	    PAUSE_UPDATER.set(this, shouldPause ? 1 : 0);
 	}
-	
+
+    public int getPaused() {
+        return paused;
+    }
+
+    public void setPaused(int paused) {
+        this.paused = paused;
+    }	
 }

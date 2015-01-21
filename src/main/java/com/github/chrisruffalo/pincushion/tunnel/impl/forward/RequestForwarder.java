@@ -6,6 +6,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 
 public class RequestForwarder extends ChannelForwarder {
 
@@ -25,7 +26,7 @@ public class RequestForwarder extends ChannelForwarder {
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 	
-		Channel target = this.target();
+		final Channel target = this.target();
 		if(target != null) {
 			return;
 		}
@@ -42,9 +43,15 @@ public class RequestForwarder extends ChannelForwarder {
 				
 				// add returner that will return values back
 				// to origin
-				ch.pipeline().addLast("request-forwarder", new ResponseForwarder(origin));
+				ch.pipeline().addLast("response-forwarder", new ResponseForwarder(origin));
 			}
-		});
+		})
+		.option(ChannelOption.TCP_NODELAY, true)
+        .option(ChannelOption.SO_KEEPALIVE, true)
+        .option(ChannelOption.SO_REUSEADDR, true)
+        // magic numbers
+        .option(ChannelOption.SO_SNDBUF, 1048576)
+        .option(ChannelOption.SO_RCVBUF, 1048576);
 		
 		// bootstrap connection
 		ChannelFuture future = this.bootstrap.connect();

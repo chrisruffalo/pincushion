@@ -55,7 +55,7 @@ public class Main {
 		
 		// do example print out
 		if(options.isCreateExample()) {
-			File example = new File("./multi-tunnel.configuration.example");
+			File example = new File("./pincushion.configuration.example");
 			if(example.exists()) {
 				example.delete();
 				try {
@@ -106,7 +106,7 @@ public class Main {
 		
 		// create tunnel holder
 		int commandLineTunnels = 0;
-		List<TunnelConfiguration> configurations = new LinkedList<>();
+		final List<TunnelConfiguration> configurations = new LinkedList<>();
 		
 		// add tunnels from command line, which take higher priority
 		// than those configured in the home folder
@@ -120,14 +120,14 @@ public class Main {
 		if(workers < 1) {
 			workers = 1;
 		}
-		EventLoopGroup eventGroup = new NioEventLoopGroup(workers);
+		final EventLoopGroup eventGroup = new NioEventLoopGroup(workers);
 		logger.info("Using {} workers", workers);
 		
 		// init interface helper since it can be slow
 		InterfaceHelper.INSTANCE.init();
 		
 		// loading directory
-		File home = new File(config.getBasePath());
+		final File home = new File(config.getBasePath());
 		// cause an error if the home directory is already a file (not a dir)
 		if(home.exists() && home.isFile()) {
 			logger.error("The base directory '{}' exists and is a file, please delete this file so a directory can be created.", PathUtil.sanitize(home));
@@ -151,7 +151,7 @@ public class Main {
 		// load extant tunnels into configuration
 		int configuredTunnels = 0;
 		File tunnelsD = new File(PathUtil.sanitize(home) + File.separator + "tunnels.d" + File.separator);
-		TunnelFileManager tunnelFileManager = new TunnelFileManager(tunnelsD);
+		final TunnelFileManager tunnelFileManager = new TunnelFileManager(tunnelsD);
 		for(String interfaceAddress : tunnelFileManager.configuredInterfaces()) {
 			for(TunnelConfiguration configuration : tunnelFileManager.tunnelsForInterface(interfaceAddress)) {
 				configurations.add(configuration);
@@ -193,7 +193,7 @@ public class Main {
 			}
 		} else {
 			// empty configuration list
-			configurations = new LinkedList<>();
+			configurations.clear();
 		}
 		
 		// start management interface

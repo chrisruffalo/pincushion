@@ -9,6 +9,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -88,8 +90,19 @@ public class Tunnel {
 		this.collector = new StatisticsCollector();
 		this.pauseController = new PauseController();
 		
+		// pre-resolve destination host
+		String localAddress = destinationHost;
+		try {
+            InetAddress address = InetAddress.getByName(localAddress);
+            localAddress = address.getHostAddress();
+        } catch (UnknownHostException uhe) {
+            // do nothing / pass on
+        }
+		final String localDestination = localAddress;		
+		this.logger.trace("resolution: {} => {}", destinationHost, localDestination);
+		
 		// create server bootstrap
-        ServerBootstrap b = new ServerBootstrap();
+        final ServerBootstrap b = new ServerBootstrap();
         b.group(this.bossGroup, this.workerGroup)
          .channel(NioServerSocketChannel.class)
          .childHandler(new ChannelInitializer<SocketChannel>() { 
@@ -102,18 +115,26 @@ public class Tunnel {
 				ch.pipeline().addFirst("pause", pauseController);
 				
 				// create forwarding client bootstrapper 
-				Bootstrap bootstrap = factory.bootstrap(destinationHost, destinationPort);
+				Bootstrap bootstrap = factory.bootstrap(localDestination, destinationPort);
 					
 				// log
 				//ch.pipeline().addLast(new LoggingHandler("forward-log", LogLevel.INFO));
+				
+				
 				
 				// add a forwarder from this server connection to the client
                 ch.pipeline().addLast("request-forwarder", new RequestForwarder(bootstrap));
             }
          })
+         // server options
+         .option(ChannelOption.TCP_NODELAY, true)
          .option(ChannelOption.SO_BACKLOG, 256) 
          .option(ChannelOption.SO_KEEPALIVE, true)
          .option(ChannelOption.SO_REUSEADDR, true)
+         // magic numbers
+         .option(ChannelOption.SO_SNDBUF, 1048576)
+         .option(ChannelOption.SO_RCVBUF, 1048576)
+         // child options
          .childOption(ChannelOption.TCP_NODELAY, true)
          .childOption(ChannelOption.AUTO_READ, false)
          ;
@@ -189,7 +210,7 @@ public class Tunnel {
 	}
 
 	public TunnelReference ref() {
-		TunnelReference ref = new TunnelReference();
+		final TunnelReference ref = new TunnelReference();
 		
 		ref.setId(this.id);
 		ref.setBind(this.prettyBind());

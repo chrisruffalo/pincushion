@@ -2,6 +2,7 @@ package com.github.chrisruffalo.pincushion.tunnel;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.oio.OioEventLoopGroup;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,10 +31,13 @@ public class TunnelManager {
 	
 	private final Logger logger;
 	
+	private final EventLoopGroup bossGroup;
+	
 	public TunnelManager(TunnelFileManager fileManager, EventLoopGroup workerGroup) {
 		this.tunnels = new HashMap<>();
 		this.workerGroup = workerGroup;
 		this.fileManager = fileManager;
+		this.bossGroup = new NioEventLoopGroup();
 		
 		this.logger = LoggerFactory.getLogger("tunnel manager");
 	}
@@ -124,7 +128,7 @@ public class TunnelManager {
 		}
 		
 		// create tunnel
-		Tunnel tunnel = new Tunnel(new NioEventLoopGroup(2), this.workerGroup, config);
+		Tunnel tunnel = new Tunnel(this.bossGroup, this.workerGroup, config);
 		
 		// start tunnel
 		boolean result = tunnel.start();
