@@ -1,6 +1,7 @@
 package com.github.chrisruffalo.pincushion.tunnel.impl.forward;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -24,7 +25,7 @@ public class RequestForwarder extends ChannelForwarder {
 	}
 
 	@Override
-	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+	public void channelActive(final ChannelHandlerContext ctx) throws Exception {
 	
 		final Channel target = this.target();
 		if(target != null) {
@@ -35,7 +36,8 @@ public class RequestForwarder extends ChannelForwarder {
 		final Channel origin = ctx.channel();
 		
 		// update bootstrap with pipeline
-		this.bootstrap.handler(new ChannelInitializer<Channel>() {
+		this.bootstrap
+		.handler(new ChannelInitializer<Channel>() {
 			@Override
 			protected void initChannel(Channel ch) throws Exception {
 				// log
@@ -43,15 +45,20 @@ public class RequestForwarder extends ChannelForwarder {
 				
 				// add returner that will return values back
 				// to origin
-				ch.pipeline().addLast("response-forwarder", new ResponseForwarder(origin));
+				ch.pipeline().addLast(origin.eventLoop(), "response-forwarder", new ResponseForwarder(origin));
 			}
 		})
 		.option(ChannelOption.TCP_NODELAY, true)
         .option(ChannelOption.SO_KEEPALIVE, true)
         .option(ChannelOption.SO_REUSEADDR, true)
+        //.option(ChannelOption.AUTO_READ, false)
         // magic numbers
         .option(ChannelOption.SO_SNDBUF, 1048576)
-        .option(ChannelOption.SO_RCVBUF, 1048576);
+        .option(ChannelOption.SO_RCVBUF, 1048576)
+        .option(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 655360)
+        // allocator
+        .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+        ;
 		
 		// bootstrap connection
 		final ChannelFuture future = this.bootstrap.connect();
@@ -71,10 +78,11 @@ public class RequestForwarder extends ChannelForwarder {
 				}
 			}
 		});
-	
+		
+		// start read
+		this.logger().trace("request: starting read");
+		
 		// forward event
 		super.channelActive(ctx);
 	}
-	
-	
 }

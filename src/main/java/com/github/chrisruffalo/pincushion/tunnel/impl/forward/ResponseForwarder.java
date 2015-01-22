@@ -20,6 +20,9 @@ public class ResponseForwarder extends ChannelForwarder {
 	
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+	    
+	    this.logger().trace("response: starting read");
+	    
 	    ctx.read();
 	    ctx.write(Unpooled.EMPTY_BUFFER);
 	}

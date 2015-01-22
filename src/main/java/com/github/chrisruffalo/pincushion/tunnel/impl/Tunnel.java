@@ -2,6 +2,7 @@ package com.github.chrisruffalo.pincushion.tunnel.impl;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -129,16 +130,23 @@ public class Tunnel {
          .option(ChannelOption.SO_BACKLOG, 256) 
          .option(ChannelOption.SO_KEEPALIVE, true)
          .option(ChannelOption.SO_REUSEADDR, true)
+         //.option(ChannelOption.AUTO_READ, false)
+         // allocator
+         .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
          // magic numbers
          .option(ChannelOption.SO_SNDBUF, 1048576)
          .option(ChannelOption.SO_RCVBUF, 1048576)
+         .option(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 655360)         
          // child options
          .childOption(ChannelOption.TCP_NODELAY, true)
          .childOption(ChannelOption.AUTO_READ, false)
+         .childOption(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 655360)
+         // allocator
+         .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
          ;
 
 		try {
-			// bind
+			// bind and read if successful
 			this.channelFuture = b.bind(this.bindInterface, this.sourcePort).sync();
 
 			this.logger.info("started");

@@ -169,7 +169,7 @@
                     <doUpdate>false</doUpdate>
                 </configuration>
             </plugin>
-		
+
 			<!-- execute test coverage -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -461,4 +461,22 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
+    <!-- improving the reports -->
+    <reporting>
+        <plugins>
+            <!-- look for common bugs/issues to keep code quality up -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <xmlOutput>true</xmlOutput>
+                    <!-- Optional directory to put findbugs xdoc xml report -->
+                    <xmlOutputDirectory>target/site</xmlOutputDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
 </project>

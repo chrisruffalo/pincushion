@@ -36,7 +36,7 @@ public class TunnelManager {
 		this.tunnels = new HashMap<>();
 		this.workerGroup = workerGroup;
 		this.fileManager = fileManager;
-		this.bossGroup = new NioEventLoopGroup();
+		this.bossGroup = new NioEventLoopGroup(6);
 		
 		this.logger = LoggerFactory.getLogger("tunnel manager");
 	}
