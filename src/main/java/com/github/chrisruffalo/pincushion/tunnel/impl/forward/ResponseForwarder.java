@@ -2,8 +2,10 @@ package com.github.chrisruffalo.pincushion.tunnel.impl.forward;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 
+@Sharable
 public class ResponseForwarder extends ChannelForwarder {
 
 	private final Channel channel;

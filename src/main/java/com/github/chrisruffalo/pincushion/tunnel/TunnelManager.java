@@ -2,7 +2,6 @@ package com.github.chrisruffalo.pincushion.tunnel;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.oio.OioEventLoopGroup;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,5 +1,7 @@
 package com.github.chrisruffalo.pincushion.tunnel.impl.forward;
 
+import org.slf4j.LoggerFactory;
+
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;

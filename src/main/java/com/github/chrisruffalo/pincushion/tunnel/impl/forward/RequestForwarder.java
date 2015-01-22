@@ -10,7 +10,7 @@ import io.netty.channel.ChannelOption;
 
 public class RequestForwarder extends ChannelForwarder {
 
-	private final Bootstrap bootstrap; 
+	private final Bootstrap bootstrap;
 	
 	private Channel remote;
 	
@@ -39,7 +39,7 @@ public class RequestForwarder extends ChannelForwarder {
 			@Override
 			protected void initChannel(Channel ch) throws Exception {
 				// log
-				//ch.pipeline().addLast(new LoggingHandler("return-log", LogLevel.INFO));
+				//ch.pipeline().addLast(new LoggingHandler("response-log", LogLevel.INFO));
 				
 				// add returner that will return values back
 				// to origin
@@ -54,7 +54,7 @@ public class RequestForwarder extends ChannelForwarder {
         .option(ChannelOption.SO_RCVBUF, 1048576);
 		
 		// bootstrap connection
-		ChannelFuture future = this.bootstrap.connect();
+		final ChannelFuture future = this.bootstrap.connect();
 		
 		// save target
 		this.remote = future.channel();

@@ -115,12 +115,10 @@ public class Tunnel {
 				ch.pipeline().addFirst("pause", pauseController);
 				
 				// create forwarding client bootstrapper 
-				Bootstrap bootstrap = factory.bootstrap(localDestination, destinationPort);
-					
+				final Bootstrap bootstrap = factory.bootstrap(localDestination, destinationPort);
+				
 				// log
-				//ch.pipeline().addLast(new LoggingHandler("forward-log", LogLevel.INFO));
-				
-				
+				//ch.pipeline().addLast(new LoggingHandler("forward-log", LogLevel.INFO));				
 				
 				// add a forwarder from this server connection to the client
                 ch.pipeline().addLast("request-forwarder", new RequestForwarder(bootstrap));
