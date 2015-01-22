@@ -14,6 +14,8 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,12 +118,25 @@ public class Main {
 		}
 				
 		// calculate threads
+		int acceptors = config.getAcceptors();
+		if(acceptors < 1) {
+		    acceptors = 1;
+		}
+		
 		int workers = config.getWorkers();
 		if(workers < 1) {
 			workers = 1;
 		}
-		final EventLoopGroup eventGroup = new NioEventLoopGroup(workers);
-		logger.info("Using {} workers", workers);
+		
+		// get exectuor
+		final Executor executor = Executors.newCachedThreadPool();
+		
+		// create event groups
+		final EventLoopGroup acceptorEventGroup = new NioEventLoopGroup(acceptors, executor);
+		logger.info("Using {} acceptor threads", acceptors);
+		
+		final EventLoopGroup workerEventGroup = new NioEventLoopGroup(workers, executor);
+		logger.info("Using {} child workers", workers);
 		
 		// init interface helper since it can be slow
 		InterfaceHelper.INSTANCE.init();
@@ -160,7 +175,7 @@ public class Main {
 		}
 
 		// create tunnel manager
-		TunnelManager tunnelManager = new TunnelManager(tunnelFileManager, eventGroup);
+		TunnelManager tunnelManager = new TunnelManager(tunnelFileManager, acceptorEventGroup, workerEventGroup);
 
 		// only start if some tunnel configuration objects exist
 		if(configurations != null && !configurations.isEmpty()) {

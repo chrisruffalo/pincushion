@@ -20,6 +20,8 @@ public class PincushionConfiguration {
 	private String managementInterface;
 	
 	private int workers;
+	
+	private int acceptors;
 
 	public PincushionConfiguration() {
 		// default options
@@ -27,9 +29,15 @@ public class PincushionConfiguration {
 		this.managementPort = 8095;
 
 		// workers/threads
-		this.workers = Runtime.getRuntime().availableProcessors() / 2;
+		this.workers = Runtime.getRuntime().availableProcessors() / 4; // half for workers, half for acceptors
+		this.acceptors = workers;
+		
 		if(this.workers < 1) {
 			this.workers = 1;
+		}
+		
+		if(this.acceptors < 1) {
+		    this.acceptors = 1;
 		}
 		
 		// directory in home path as default
@@ -68,7 +76,15 @@ public class PincushionConfiguration {
 		this.workers = workers;
 	}	
 	
-	public void write(OutputStream output) {
+	public int getAcceptors() {
+        return acceptors;
+    }
+
+    public void setAcceptors(int acceptors) {
+        this.acceptors = acceptors;
+    }
+
+    public void write(OutputStream output) {
 		ObjectMapper instance = new ObjectMapper();
 		
 		try {
