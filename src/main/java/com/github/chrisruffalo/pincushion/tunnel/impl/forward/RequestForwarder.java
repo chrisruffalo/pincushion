@@ -45,7 +45,7 @@ public class RequestForwarder extends ChannelForwarder {
 				
 				// add returner that will return values back
 				// to origin
-				ch.pipeline().addLast(origin.eventLoop(), "response-forwarder", new ResponseForwarder(origin));
+				ch.pipeline().addLast("response-forwarder", new ResponseForwarder(origin));
 			}
 		})
 		.option(ChannelOption.TCP_NODELAY, true)
