@@ -13,7 +13,7 @@ public class PathUtil {
 	 */
 	public static String sanitize(File file) {
 		try {
-			String path = file.getCanonicalPath();
+			final String path = file.getCanonicalPath();
 			return path;
 		} catch (IOException e) {
 			return file.getAbsolutePath();

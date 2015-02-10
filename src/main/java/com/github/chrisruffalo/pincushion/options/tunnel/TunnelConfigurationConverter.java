@@ -8,7 +8,7 @@ import com.github.chrisruffalo.pincushion.model.tunnel.TunnelConfiguration;
 
 public class TunnelConfigurationConverter implements IStringConverter<TunnelConfiguration> {
 
-	private static final String CONFIGUATION_TEXT_FORMAT = "<sourcePort>:<destinationHost>:<destinationPort>\" or \"<sourceInterface>:<sourcePort>:<destinationHost>:<destinationPort>";
+	private static final String CONFIGURATION_TEXT_FORMAT = "<sourcePort>:<destinationHost>:<destinationPort>\" or \"<sourceInterface>:<sourcePort>:<destinationHost>:<destinationPort>";
 	
 	@Override
 	public TunnelConfiguration convert(String arg0) {
@@ -20,7 +20,7 @@ public class TunnelConfigurationConverter implements IStringConverter<TunnelConf
 		
 		if(split.length < 3 || split.length > 4) {
 			// log infraction
-			logger.error("Tunnel instance '{}' does not match the format: '{}'", arg0, TunnelConfigurationConverter.CONFIGUATION_TEXT_FORMAT);
+			logger.error("Tunnel instance '{}' does not match the format: '{}'", arg0, TunnelConfigurationConverter.CONFIGURATION_TEXT_FORMAT);
 			
 			// do nothing
 			return null;
@@ -33,12 +33,12 @@ public class TunnelConfigurationConverter implements IStringConverter<TunnelConf
 				instance.setSourceInterface(split[0]);
 				offset = 1;
 			}
-			instance.setSourcePort(Integer.parseInt(split[0 + offset]));
+			instance.setSourcePort(Integer.parseInt(split[0 + offset])); // i know this can be replaced with just "offset" but I kept it for consistency
 			instance.setDestHost(split[1 + offset]);
 			instance.setDestPort(Integer.parseInt(split[2 + offset]));
 		} catch (Exception ex) {
-			// logg error
-			logger.error("Could not parse tunnel configuration '{}', tunnel description should be in the format: '{}'", arg0, TunnelConfigurationConverter.CONFIGUATION_TEXT_FORMAT);
+			// log error
+			logger.error("Could not parse tunnel configuration '{}', tunnel description should be in the format: '{}'", arg0, TunnelConfigurationConverter.CONFIGURATION_TEXT_FORMAT);
 			
 			// do not add
 			return null;

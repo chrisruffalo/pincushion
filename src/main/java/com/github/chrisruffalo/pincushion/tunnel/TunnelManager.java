@@ -143,7 +143,7 @@ public class TunnelManager {
 			}
 		
 			// return ref
-			TunnelReference reference = tunnel.ref();
+			final TunnelReference reference = tunnel.ref();
 			
 			return reference;
 		}

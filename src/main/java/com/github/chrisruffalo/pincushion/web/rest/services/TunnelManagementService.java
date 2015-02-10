@@ -81,14 +81,14 @@ public class TunnelManagementService {
 	@Path("/start")
 	@PUT
 	public TunnelReference start(TunnelConfiguration configuration) {
-		TunnelReference ref = this.manager.create(configuration, true);
+		final TunnelReference ref = this.manager.create(configuration, true);
 		return ref;
 	}
 	
 	@Path("/{id}/update")
 	@PUT
 	public TunnelReference start(@PathParam("id") String id, TunnelConfiguration configuration) {
-		TunnelReference ref = this.manager.update(id, configuration);
+		final TunnelReference ref = this.manager.update(id, configuration);
 		return ref;
 	}
 }

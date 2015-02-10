@@ -30,10 +30,10 @@ public class ResteasyBootstrapInstanceFactory implements InstanceFactory<Resteas
 	    };
 
 	    // create new instance handle for bootstrap
-		InstanceHandle<ResteasyBootstrap> handle = new InstanceHandle<ResteasyBootstrap>() {
+		final InstanceHandle<ResteasyBootstrap> handle = new InstanceHandle<ResteasyBootstrap>() {
 			@Override
 			public ResteasyBootstrap getInstance() {
-				return bootstrap;
+                return bootstrap;
 			}
 
 			@Override

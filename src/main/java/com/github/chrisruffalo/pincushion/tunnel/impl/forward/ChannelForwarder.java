@@ -23,6 +23,8 @@ public abstract class ChannelForwarder extends ChannelHandlerAdapter {
         if (target != null && target.isActive()) {
         	target.write(msg);
         }
+
+        this.logger().trace("writing");
 	}
 		
 	@Override
@@ -36,6 +38,8 @@ public abstract class ChannelForwarder extends ChannelHandlerAdapter {
 	        // restart read
 	        ctx.read();
 	    }
+
+        this.logger().trace("done writing");
 	    
 	    super.channelReadComplete(ctx);
     }
@@ -51,16 +55,16 @@ public abstract class ChannelForwarder extends ChannelHandlerAdapter {
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)	throws Exception {
 	    // log error
-	    this.logger().error("({}) closed on error: {}", this.getClass().getSimpleName(), cause.getMessage());
+	    this.logger().error("({}) closed on error: {}", this.getClass().getSimpleName(), cause.getMessage(), cause);
 	    
 		// close target
 		final Channel target = this.target();
 		if(target != null && target.isOpen()) {
-			target.close();
+			ChannelForwarder.closeOnFlush(target);
 		}
-		
+
 		// close local
-		ChannelForwarder.closeOnFlush(ctx.channel());		
+		ChannelForwarder.closeOnFlush(ctx.channel());
 	}	
 	
 	/**
@@ -77,7 +81,7 @@ public abstract class ChannelForwarder extends ChannelHandlerAdapter {
      * 
      * @param ch
      */
-    private static void closeOnFlush(Channel ch) {
+    protected static void closeOnFlush(Channel ch) {
         if (ch.isActive()) {
             ch.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
         } else {

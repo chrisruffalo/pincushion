@@ -17,24 +17,31 @@ import org.codehaus.jackson.map.ObjectMapper;
 import com.github.chrisruffalo.pincushion.file.DirectoryFilter;
 import com.github.chrisruffalo.pincushion.model.tunnel.TunnelConfiguration;
 import com.github.chrisruffalo.pincushion.util.PathUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TunnelFileManager {
 
 	private final File tunnelDir;
 
+    private final Logger logger;
+
 	private final SimpleDateFormat archiveDateFormatter;
 	
 	public TunnelFileManager(File tunnelDir) {
 		this.tunnelDir = tunnelDir;
-		
-		this.archiveDateFormatter = new SimpleDateFormat("yyyy.MM.dd_hh.mm.ss");
+
+
+        this.logger = LoggerFactory.getLogger("tunnel-file-manager");
+
+        this.archiveDateFormatter = new SimpleDateFormat("yyyy.MM.dd_hh.mm.ss");
 	}	
 	
 	public List<String> configuredInterfaces() {
 		if(!tunnelDir.exists() || !tunnelDir.isDirectory()) {
 			return Collections.emptyList();
 		}
-		
+
 		List<String> interfaces = new LinkedList<>();
 		
 		// for each directory, return.  make sure 0.0.0.0 and ::0 are first.
@@ -72,7 +79,7 @@ public class TunnelFileManager {
 			// look for tunnel.json
 			File tunnelFile = new File(PathUtil.sanitize(portDir) + File.separator + "tunnel.json");
 			
-			// if the file isn't availbale or isn't a file, don't bother
+			// if the file isn't available or isn't a file, don't bother
 			if(!tunnelFile.exists() || !tunnelFile.isFile()) {
 				continue;
 			}
@@ -83,9 +90,9 @@ public class TunnelFileManager {
 				TunnelConfiguration config = instance.readValue(stream, TunnelConfiguration.class);
 				tunnels.add(config);
 			} catch (FileNotFoundException e) {
-				// do nothing?				
+				this.logger.error("Could not find file for reading tunnel configuration: {}", tunnelFile.getPath());
 			} catch (IOException e) {
-				// do nothing?
+                this.logger.error("IO exception while reading tunnel configuration: {}", e.getMessage());
 			} 
 		}		
 		
@@ -108,17 +115,18 @@ public class TunnelFileManager {
 		try {
 			tunnelFile.createNewFile();
 		} catch (IOException e) {
-			// could not create
+            this.logger.error("Could not create new tunnel file: {}", tunnelFile.getPath());
 		}
+
 		// write out
 		try (FileOutputStream stream = new FileOutputStream(tunnelFile)) {
 			ObjectMapper instance = new ObjectMapper();
 			// print pretty to file (for humans!)
 			instance.writerWithDefaultPrettyPrinter().writeValue(stream, toSave);
 		} catch (FileNotFoundException e) {
-			// do nothing?				
+            this.logger.error("Could not find file for writing tunnel configuration: {}", tunnelFile.getPath());
 		} catch (IOException e) {
-			// do nothing?
+            this.logger.error("IO exception while writing tunnel file: {}", e.getMessage());
 		}		
 	}
 	
@@ -163,7 +171,7 @@ public class TunnelFileManager {
 		iface = this.filter(iface);
 		
 		// create file direct to tunnel
-		File tunnelDir = new File(PathUtil.sanitize(this.tunnelDir) + File.separator + iface + File.separator + forPath.getSourcePort() + File.separator);
+		final File tunnelDir = new File(PathUtil.sanitize(this.tunnelDir) + File.separator + iface + File.separator + forPath.getSourcePort() + File.separator);
 		
 		return tunnelDir;
 	}
@@ -171,7 +179,7 @@ public class TunnelFileManager {
 	private File archivePathForConfiguration(TunnelConfiguration forPath) {
 		File tunnelDir = this.basePathForConfiguration(forPath);
 		
-		File tunnelFile = new File(PathUtil.sanitize(tunnelDir) + File.separator + "archive" + File.separator);
+		final File tunnelFile = new File(PathUtil.sanitize(tunnelDir) + File.separator + "archive" + File.separator);
 		
 		return tunnelFile;
 	}
@@ -180,7 +188,7 @@ public class TunnelFileManager {
 	private File tunnelFileForConfiguration(TunnelConfiguration forPath) {
 		File tunnelDir = this.basePathForConfiguration(forPath);
 		
-		File tunnelFile = new File(PathUtil.sanitize(tunnelDir) + File.separator + "tunnel.json");
+		final File tunnelFile = new File(PathUtil.sanitize(tunnelDir) + File.separator + "tunnel.json");
 		
 		return tunnelFile;		
 	}

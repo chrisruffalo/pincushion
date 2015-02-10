@@ -8,3 +8,6 @@ dependency-reduced-pom.xml
 src/main/resources/web/app/css/main.css
 
 pincushion.con*
+
+*.iml
+.idea/**

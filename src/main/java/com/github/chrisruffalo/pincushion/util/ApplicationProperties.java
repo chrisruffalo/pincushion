@@ -7,7 +7,7 @@ public enum ApplicationProperties {
 
 	INSTANCE;
 	
-	private Properties props;
+	private final Properties props;
 	
 	private ApplicationProperties() {
 		this.props = new Properties();

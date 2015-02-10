@@ -69,7 +69,7 @@ public class StatisticsCollector extends ChannelHandlerAdapter {
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		AC_UPDATER.decrementAndGet(this);
-		
+
 		super.channelInactive(ctx);
 	}
 

@@ -1,30 +1,24 @@
 package com.github.chrisruffalo.pincushion.tunnel.impl;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.UUID;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.chrisruffalo.pincushion.client.ClientFactory;
 import com.github.chrisruffalo.pincushion.model.tunnel.TunnelConfiguration;
 import com.github.chrisruffalo.pincushion.model.tunnel.TunnelReference;
 import com.github.chrisruffalo.pincushion.model.tunnel.TunnelStatistics;
 import com.github.chrisruffalo.pincushion.tunnel.impl.control.PauseController;
 import com.github.chrisruffalo.pincushion.tunnel.impl.control.StatisticsCollector;
-import com.github.chrisruffalo.pincushion.tunnel.impl.forward.RequestForwarder;
+import com.github.chrisruffalo.pincushion.tunnel.impl.initializer.RequestForwardInitializer;
 import com.github.chrisruffalo.pincushion.util.InterfaceHelper;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.UUID;
 
 public class Tunnel {
 
@@ -51,7 +45,7 @@ public class Tunnel {
 	private final Logger logger;
 	
 	private final TunnelConfiguration configuration;
-	
+
 	private StatisticsCollector collector;
 	
 	private PauseController pauseController;
@@ -68,7 +62,7 @@ public class Tunnel {
 		this.sourcePort = configuration.getSourcePort();
 		this.destinationHost = configuration.getDestHost();
 		this.destinationPort = configuration.getDestPort();
-		
+
 		this.configuration = configuration;
 		
 		// create visual representation of binding
@@ -84,9 +78,6 @@ public class Tunnel {
 	}
 	
 	public boolean start() {
-		// create new client factory
-		final ClientFactory factory = new ClientFactory(this.workerGroup);
-		
 		// create pipeline components
 		this.collector = new StatisticsCollector();
 		this.pauseController = new PauseController();
@@ -99,32 +90,17 @@ public class Tunnel {
         } catch (UnknownHostException uhe) {
             // do nothing / pass on
         }
-		final String localDestination = localAddress;		
+		final String localDestination = localAddress;
 		this.logger.trace("resolution: {} => {}", destinationHost, localDestination);
-		
+
+        // create request forward initializer
+        final RequestForwardInitializer requestForwardInitializer = new RequestForwardInitializer(this.collector, this.pauseController, this.workerGroup, localAddress, this.destinationPort);
+
 		// create server bootstrap
         final ServerBootstrap b = new ServerBootstrap();
         b.group(this.bossGroup, this.workerGroup)
          .channel(NioServerSocketChannel.class)
-         .childHandler(new ChannelInitializer<SocketChannel>() { 
-			@Override
-            public void initChannel(SocketChannel ch) throws Exception {
-				// add stats collector to head of pipeline
-				ch.pipeline().addFirst("stats", collector);
-				
-				// add pause controller even before that...
-				ch.pipeline().addFirst("pause", pauseController);
-				
-				// create forwarding client bootstrapper 
-				final Bootstrap bootstrap = factory.bootstrap(localDestination, destinationPort);
-				
-				// log
-				//ch.pipeline().addLast(new LoggingHandler("forward-log", LogLevel.INFO));				
-				
-				// add a forwarder from this server connection to the client
-                ch.pipeline().addLast("request-forwarder", new RequestForwarder(bootstrap));
-            }
-         })
+         .childHandler(requestForwardInitializer)
          // server options
          .option(ChannelOption.TCP_NODELAY, true)
          .option(ChannelOption.SO_BACKLOG, 256) 
@@ -189,7 +165,7 @@ public class Tunnel {
 	}
 
 	public String bind() {
-		return this.bindInterface;
+        return this.bindInterface;
 	}
 	
 	public String prettyBind() {

@@ -34,7 +34,7 @@ public enum PortHelper {
 		}
 		
 		// check both bind and based on talking to it
-		boolean response = this.checkCanBind(bind, port) && this.checkCanTalk(bind, port);
+		final boolean response = this.checkCanBind(bind, port) && this.checkCanTalk(bind, port);
 		
 		// return response
 	    return response;

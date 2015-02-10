@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import io.netty.util.concurrent.DefaultThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +73,7 @@ public class Main {
 			try (FileOutputStream output = new FileOutputStream(example)) {
 				PincushionConfiguration exampleConfiguration = new PincushionConfiguration();
 				exampleConfiguration.write(output);
-				System.out.println("Example file written to: " + PathUtil.sanitize(example));
+				logger.info("Example file written to: " + PathUtil.sanitize(example));
 				
 				output.flush();
 			} catch (FileNotFoundException e) {
@@ -90,16 +91,17 @@ public class Main {
 		// look for configuration file
 		PincushionConfiguration config = new PincushionConfiguration();
 		File configFile = options.getConfigurationFile();
-		InputStream input = null;
+
 		if(configFile.exists() && configFile.isFile()) {
-			try {
-				input = new FileInputStream(configFile);
-				config = PincushionConfiguration.read(input, logger); 
+			try(InputStream input = new FileInputStream(configFile)) {
+				config = PincushionConfiguration.read(input, logger);
 				logger.info("Using configuration file: {}", PathUtil.sanitize(configFile));
 			} catch (FileNotFoundException e) {
 				logger.error("Could not load configuration file, using defaults");
-			}
-		} else {
+			} catch (IOException e) {
+                logger.error("Could not close Pincushion configuration file: " + e.getMessage());
+            }
+        } else {
 			logger.info("Using default configuration");
 		}
 				
@@ -128,9 +130,10 @@ public class Main {
 			workers = 1;
 		}
 		
-		// get exectuor
-		final Executor executor = Executors.newCachedThreadPool();
-		
+		// get executor
+        final DefaultThreadFactory threadFactory = new DefaultThreadFactory("pincushion");
+		final Executor executor = Executors.newCachedThreadPool(threadFactory);
+
 		// create event groups
 		final EventLoopGroup acceptorEventGroup = new NioEventLoopGroup(acceptors, executor);
 		logger.info("Using {} acceptor threads", acceptors);
@@ -148,7 +151,8 @@ public class Main {
 			logger.error("The base directory '{}' exists and is a file, please delete this file so a directory can be created.", PathUtil.sanitize(home));
 			return;
 		}
-		// if the home directory does not exist, create
+
+		// if the Pincushion home directory does not exist, create
 		if(!home.exists()) {
 			// create home
 			home.mkdirs();
@@ -218,7 +222,7 @@ public class Main {
 		// and wait
 		while(true) {
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(60000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

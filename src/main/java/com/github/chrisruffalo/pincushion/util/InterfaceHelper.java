@@ -28,7 +28,7 @@ public enum InterfaceHelper {
 	
 	private static final String FALLBACK = "127.0.0.1";
 
-	private Logger logger;
+	private final Logger logger;
 	
 	private Map<String, Set<String>> interfaceCache;
 	
@@ -115,12 +115,12 @@ public enum InterfaceHelper {
 			return this.interfaceCache;
 		}
 		
-		Map<String,Set<String>> interfaces = new TreeMap<String, Set<String>>();
+		Map<String,Set<String>> interfaces = new TreeMap<>();
 		
-		Set<String> physInterfaces = new TreeSet<String>();
-		Set<String> hostInterfaces = new TreeSet<String>();
-		Set<String> ip4Interfaces = new TreeSet<String>();
-		Set<String> ip6Interfaces = new TreeSet<String>();
+		Set<String> physInterfaces = new TreeSet<>();
+		Set<String> hostInterfaces = new TreeSet<>();
+		Set<String> ip4Interfaces = new TreeSet<>();
+		Set<String> ip6Interfaces = new TreeSet<>();
 		
 		// enumerate interfaces
 		Enumeration<NetworkInterface> nets;
@@ -192,7 +192,7 @@ public enum InterfaceHelper {
 	public Set<String> validInterfaceSet() {
 		Map<String,Set<String>> interfaces = this.validInterfaces();
 		
-		Set<String> interfacesSet = new HashSet<String>();
+		Set<String> interfacesSet = new HashSet<>();
 		
 		for(Set<String> subSet : interfaces.values()) {
 			if(subSet != null && !subSet.isEmpty()) {

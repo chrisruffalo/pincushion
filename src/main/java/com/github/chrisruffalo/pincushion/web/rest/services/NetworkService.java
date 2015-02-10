@@ -28,7 +28,7 @@ public class NetworkService {
 		}		
 		String saneInterfaceName = InterfaceHelper.INSTANCE.sanitize(interfaceName);
 		
-		Map<String,String> message = new HashMap<String, String>();
+		Map<String,String> message = new HashMap<>();
 		
 		// send a message if the interface changes
 		if(!interfaceName.equalsIgnoreCase(saneInterfaceName)) {
@@ -55,7 +55,7 @@ public class NetworkService {
 		
 		// check availability
 		boolean result = PortHelper.INSTANCE.available(interfaceName, port);
-		Map<String,String> message = new HashMap<String, String>();
+		Map<String,String> message = new HashMap<>();
 		message.put("result", String.valueOf(result));
 		return message;
 	}

@@ -29,18 +29,30 @@ import com.github.chrisruffalo.pincushion.tunnel.TunnelManager;
 import com.github.chrisruffalo.pincushion.web.rest.ManagementApplication;
 import com.github.chrisruffalo.pincushion.web.support.ResteasyBootstrapInstanceFactory;
 
+/**
+ * Starts (and manages) the Pincushion web interface using Undertow.
+ *
+ */
 public class ManagementInterface {
 
 	private final String managementInterface;
 	
 	private final int managementPort;
 	
-	private Logger logger;
+	private final Logger logger;
 	
 	private final TunnelManager manager;
 	
 	private Undertow server;
-	
+
+    /**
+     * Create a new instance of the web management interface.  Requires the
+     * manager for the tunnels and derives some values from the root
+     * Pincushion configuration.
+     *
+     * @param manager tunnel manager to manage tunnels with
+     * @param config the pincushion configuration
+     */
 	public ManagementInterface(TunnelManager manager, PincushionConfiguration config) {
 		this.managementInterface = config.getManagementInterface();
 		this.managementPort = config.getManagementPort();
@@ -49,7 +61,11 @@ public class ManagementInterface {
 		
 		this.logger = LoggerFactory.getLogger("management [" + this.managementInterface + ":" + this.managementPort + "]");
 	}
-	
+
+    /**
+     * Start the management interface.
+     *
+     */
 	public void start() {
 		
 		Builder builder = Undertow.builder();
@@ -120,5 +136,15 @@ public class ManagementInterface {
 		
 		this.logger.info("Started undertow management interface at {} on port {}", this.managementInterface, this.managementPort);
 	}
-	
+
+    /**
+     * Stop the web management interface.
+     *
+     */
+    public void stop() {
+        if(this.server != null) {
+            this.server.stop();
+            this.logger.info("Stopped undertow management interface");
+        }
+    }
 }
